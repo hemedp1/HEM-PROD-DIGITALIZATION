@@ -2,14 +2,20 @@
 # Visual Studio / C# / WinForms
 # ==========================
 
-# Ignore VS temp files but NOT bin/Debug
+# Ignore VS temp files
 .vs/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 
-# Optional: Ignore obj folder (still recommended)
+# Keep bin/Debug, bin/Release, and compiled outputs
+# (Do NOT ignore bin/)
+# (Do NOT ignore .exe, .dll, .pdb)
+# bin/Debug/
+# bin/Release/
+
+# Ignore obj folder (intermediate files, still safe to ignore)
 obj/
 
 # Rider project files
