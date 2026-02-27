@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RCU FG Output Counter", "RCU FG Output Counter.csproj", "{5D70F181-4C95-4C82-99A2-5CBC04F731FB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5D70F181-4C95-4C82-99A2-5CBC04F731FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D70F181-4C95-4C82-99A2-5CBC04F731FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D70F181-4C95-4C82-99A2-5CBC04F731FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D70F181-4C95-4C82-99A2-5CBC04F731FB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8E14D4D3-DC8A-4FF0-8D58-8A7F0890EDB0}
+	EndGlobalSection
+EndGlobal

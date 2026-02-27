@@ -1,0 +1,14 @@
+﻿# Visual Studio
+.vs/
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.user
+*.suo
+*.cache
+
+# Others
+*.log
+*.tmp
