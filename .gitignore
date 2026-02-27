@@ -1,7 +1,8 @@
 ﻿# Visual Studio
 .vs/
-bin/Debug/
-obj/
+bin\Debug\
+bin\Release\
+obj\
 *.exe
 *.dll
 *.pdb
