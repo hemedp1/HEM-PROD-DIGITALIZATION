@@ -1,15 +1,59 @@
-﻿# Visual Studio
+﻿# ==========================
+# Visual Studio / C# / WinForms
+# ==========================
+
+# Ignore VS temp files but NOT bin/Debug
 .vs/
-bin\Debug\
-bin\Release\
-obj\
-*.exe
-*.dll
-*.pdb
 *.user
 *.suo
-*.cache
+*.userosscache
+*.sln.docstates
 
-# Others
+# Optional: Ignore obj folder (still recommended)
+obj/
+
+# Rider project files
+.idea/
+*.sln.iml
+
+# ReSharper files
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# NuGet packages
+*.nupkg
+packages/
+*.snupkg
+.nuget/
+
+# VS Code
+.vscode/
+
+# Log and temp files
 *.log
 *.tmp
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Crystal Reports temp files
+*.rpt.tmp
+*.rpt~*
+
+# User secrets
+secrets.json
+*.pfx
+*.key
+
+# Databases / generated local files
+*.mdf
+*.ldf
+*.db
+*.sdf
+
+# Publish / deployment folders
+publish/
+deploy/
