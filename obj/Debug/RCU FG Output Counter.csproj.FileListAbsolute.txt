@@ -36,3 +36,18 @@ C:\Users\016-064-050\Desktop\HEM-Digitalization\bin\Debug\System.Configuration.C
 C:\Users\016-064-050\Desktop\HEM-Digitalization\bin\Debug\System.Configuration.ConfigurationManager.xml
 C:\Users\016-064-050\Desktop\HEM-Digitalization\obj\Debug\RCU FG Output Counter.exe.config
 C:\Users\016-064-050\Desktop\HEM-Digitalization\obj\Debug\RCU FG O.88419ABC.Up2Date
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\bin\Debug\RCU FG Output Counter.exe.config
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\bin\Debug\RCU FG Output Counter.exe
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\bin\Debug\RCU FG Output Counter.pdb
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\bin\Debug\Automation.BDaq4.dll
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\bin\Debug\System.Configuration.ConfigurationManager.xml
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.csproj.AssemblyReference.cache
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU_FG_Output_Counter.MainForm.resources
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU_FG_Output_Counter.PasswordPrompt.resources
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU_FG_Output_Counter.Properties.Resources.resources
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU_FG_Output_Counter.QRLabelCheck.resources
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.csproj.GenerateResource.cache
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.csproj.CoreCompileInputs.cache
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.csproj.CopyComplete
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.exe
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.pdb

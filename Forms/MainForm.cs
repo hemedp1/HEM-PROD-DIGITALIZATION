@@ -97,7 +97,7 @@ namespace RCU_FG_Output_Counter
                 if (node.Equals(default(Automation.BDaq.DeviceTreeNode)))
                 {
                     _daqDeviceIsConnected = false;
-                    lblStatus.Text = "USB-4750 not found!";
+                    lblStatus.Text = "USB-4750 not found! OMG";
                     lblStatus.ForeColor = Color.Orange;
                     return;
                 }
