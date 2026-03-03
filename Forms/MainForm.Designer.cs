@@ -71,6 +71,12 @@ namespace RCU_FG_Output_Counter
             this.label12 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
+            this.txtPO = new System.Windows.Forms.TextBox();
+            this.label44 = new System.Windows.Forms.Label();
+            this.txtCust = new System.Windows.Forms.TextBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.label42 = new System.Windows.Forms.Label();
+            this.txtLot2 = new System.Windows.Forms.TextBox();
             this.txtLine = new System.Windows.Forms.TextBox();
             this.lblid = new System.Windows.Forms.Label();
             this.lblcpn2 = new System.Windows.Forms.Label();
@@ -114,6 +120,8 @@ namespace RCU_FG_Output_Counter
             this.label39 = new System.Windows.Forms.Label();
             this.label40 = new System.Windows.Forms.Label();
             this.label41 = new System.Windows.Forms.Label();
+            this.printDocument1 = new System.Drawing.Printing.PrintDocument();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picCamera1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picCamera2)).BeginInit();
             this.panel1.SuspendLayout();
@@ -136,17 +144,16 @@ namespace RCU_FG_Output_Counter
             // txtQRBOM
             // 
             this.txtQRBOM.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtQRBOM.Location = new System.Drawing.Point(263, 71);
+            this.txtQRBOM.Location = new System.Drawing.Point(263, 52);
             this.txtQRBOM.Name = "txtQRBOM";
             this.txtQRBOM.Size = new System.Drawing.Size(314, 32);
             this.txtQRBOM.TabIndex = 1;
-            this.txtQRBOM.TextChanged += new System.EventHandler(this.txtQRBOM_TextChanged);
             this.txtQRBOM.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtQRBOM_KeyDown);
             // 
             // txtWO
             // 
             this.txtWO.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtWO.Location = new System.Drawing.Point(263, 110);
+            this.txtWO.Location = new System.Drawing.Point(263, 91);
             this.txtWO.Name = "txtWO";
             this.txtWO.Size = new System.Drawing.Size(314, 32);
             this.txtWO.TabIndex = 2;
@@ -215,7 +222,7 @@ namespace RCU_FG_Output_Counter
             // txtWOQ
             // 
             this.txtWOQ.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtWOQ.Location = new System.Drawing.Point(263, 148);
+            this.txtWOQ.Location = new System.Drawing.Point(263, 129);
             this.txtWOQ.Name = "txtWOQ";
             this.txtWOQ.Size = new System.Drawing.Size(314, 32);
             this.txtWOQ.TabIndex = 10;
@@ -224,7 +231,7 @@ namespace RCU_FG_Output_Counter
             // txtHEMPN
             // 
             this.txtHEMPN.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtHEMPN.Location = new System.Drawing.Point(263, 187);
+            this.txtHEMPN.Location = new System.Drawing.Point(263, 168);
             this.txtHEMPN.Name = "txtHEMPN";
             this.txtHEMPN.Size = new System.Drawing.Size(314, 32);
             this.txtHEMPN.TabIndex = 11;
@@ -233,7 +240,7 @@ namespace RCU_FG_Output_Counter
             // txtPrddte
             // 
             this.txtPrddte.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPrddte.Location = new System.Drawing.Point(263, 302);
+            this.txtPrddte.Location = new System.Drawing.Point(263, 283);
             this.txtPrddte.Name = "txtPrddte";
             this.txtPrddte.Size = new System.Drawing.Size(314, 32);
             this.txtPrddte.TabIndex = 12;
@@ -242,7 +249,7 @@ namespace RCU_FG_Output_Counter
             // txtLot
             // 
             this.txtLot.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtLot.Location = new System.Drawing.Point(263, 341);
+            this.txtLot.Location = new System.Drawing.Point(263, 322);
             this.txtLot.Name = "txtLot";
             this.txtLot.Size = new System.Drawing.Size(314, 32);
             this.txtLot.TabIndex = 13;
@@ -251,7 +258,7 @@ namespace RCU_FG_Output_Counter
             // txtSTDPK
             // 
             this.txtSTDPK.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSTDPK.Location = new System.Drawing.Point(263, 379);
+            this.txtSTDPK.Location = new System.Drawing.Point(263, 398);
             this.txtSTDPK.Name = "txtSTDPK";
             this.txtSTDPK.Size = new System.Drawing.Size(314, 32);
             this.txtSTDPK.TabIndex = 14;
@@ -261,11 +268,11 @@ namespace RCU_FG_Output_Counter
             // 
             this.lblqrbom.AutoSize = true;
             this.lblqrbom.BackColor = System.Drawing.Color.GhostWhite;
-            this.lblqrbom.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblqrbom.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblqrbom.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblqrbom.Location = new System.Drawing.Point(13, 74);
+            this.lblqrbom.Location = new System.Drawing.Point(13, 55);
             this.lblqrbom.Name = "lblqrbom";
-            this.lblqrbom.Size = new System.Drawing.Size(110, 29);
+            this.lblqrbom.Size = new System.Drawing.Size(101, 26);
             this.lblqrbom.TabIndex = 15;
             this.lblqrbom.Text = "QR BOM";
             // 
@@ -273,11 +280,11 @@ namespace RCU_FG_Output_Counter
             // 
             this.lblwo.AutoSize = true;
             this.lblwo.BackColor = System.Drawing.Color.GhostWhite;
-            this.lblwo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblwo.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblwo.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblwo.Location = new System.Drawing.Point(13, 111);
+            this.lblwo.Location = new System.Drawing.Point(13, 92);
             this.lblwo.Name = "lblwo";
-            this.lblwo.Size = new System.Drawing.Size(138, 29);
+            this.lblwo.Size = new System.Drawing.Size(124, 26);
             this.lblwo.TabIndex = 16;
             this.lblwo.Text = "Work Order";
             // 
@@ -285,11 +292,11 @@ namespace RCU_FG_Output_Counter
             // 
             this.lblwoq.AutoSize = true;
             this.lblwoq.BackColor = System.Drawing.Color.GhostWhite;
-            this.lblwoq.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblwoq.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblwoq.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblwoq.Location = new System.Drawing.Point(13, 151);
+            this.lblwoq.Location = new System.Drawing.Point(13, 132);
             this.lblwoq.Name = "lblwoq";
-            this.lblwoq.Size = new System.Drawing.Size(180, 29);
+            this.lblwoq.Size = new System.Drawing.Size(164, 26);
             this.lblwoq.TabIndex = 17;
             this.lblwoq.Text = "Work Order Qty";
             // 
@@ -297,11 +304,11 @@ namespace RCU_FG_Output_Counter
             // 
             this.lblpn.AutoSize = true;
             this.lblpn.BackColor = System.Drawing.Color.GhostWhite;
-            this.lblpn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblpn.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblpn.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblpn.Location = new System.Drawing.Point(13, 188);
+            this.lblpn.Location = new System.Drawing.Point(13, 169);
             this.lblpn.Name = "lblpn";
-            this.lblpn.Size = new System.Drawing.Size(149, 29);
+            this.lblpn.Size = new System.Drawing.Size(136, 26);
             this.lblpn.TabIndex = 18;
             this.lblpn.Text = "Part Number";
             // 
@@ -309,11 +316,11 @@ namespace RCU_FG_Output_Counter
             // 
             this.lblpdte.AutoSize = true;
             this.lblpdte.BackColor = System.Drawing.Color.GhostWhite;
-            this.lblpdte.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblpdte.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblpdte.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblpdte.Location = new System.Drawing.Point(13, 305);
+            this.lblpdte.Location = new System.Drawing.Point(13, 286);
             this.lblpdte.Name = "lblpdte";
-            this.lblpdte.Size = new System.Drawing.Size(185, 29);
+            this.lblpdte.Size = new System.Drawing.Size(168, 26);
             this.lblpdte.TabIndex = 19;
             this.lblpdte.Text = "Production Date";
             // 
@@ -321,23 +328,23 @@ namespace RCU_FG_Output_Counter
             // 
             this.lbllot.AutoSize = true;
             this.lbllot.BackColor = System.Drawing.Color.GhostWhite;
-            this.lbllot.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbllot.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbllot.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lbllot.Location = new System.Drawing.Point(13, 347);
+            this.lbllot.Location = new System.Drawing.Point(13, 326);
             this.lbllot.Name = "lbllot";
-            this.lbllot.Size = new System.Drawing.Size(61, 29);
+            this.lbllot.Size = new System.Drawing.Size(77, 26);
             this.lbllot.TabIndex = 20;
-            this.lbllot.Text = "LOT";
+            this.lbllot.Text = "LOT 1 ";
             // 
             // lblstdpk
             // 
             this.lblstdpk.AutoSize = true;
             this.lblstdpk.BackColor = System.Drawing.Color.GhostWhite;
-            this.lblstdpk.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblstdpk.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblstdpk.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblstdpk.Location = new System.Drawing.Point(13, 382);
+            this.lblstdpk.Location = new System.Drawing.Point(13, 399);
             this.lblstdpk.Name = "lblstdpk";
-            this.lblstdpk.Size = new System.Drawing.Size(244, 29);
+            this.lblstdpk.Size = new System.Drawing.Size(224, 26);
             this.lblstdpk.TabIndex = 21;
             this.lblstdpk.Text = "Standard Packing Qty";
             // 
@@ -345,9 +352,9 @@ namespace RCU_FG_Output_Counter
             // 
             this.btnClear.BackColor = System.Drawing.Color.IndianRed;
             this.btnClear.Font = new System.Drawing.Font("MS Reference Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Location = new System.Drawing.Point(426, 774);
+            this.btnClear.Location = new System.Drawing.Point(428, 853);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(150, 55);
+            this.btnClear.Size = new System.Drawing.Size(149, 46);
             this.btnClear.TabIndex = 22;
             this.btnClear.TabStop = false;
             this.btnClear.Text = "Clear";
@@ -390,7 +397,7 @@ namespace RCU_FG_Output_Counter
             this.label8.AutoSize = true;
             this.label8.BackColor = System.Drawing.Color.GhostWhite;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label8.ForeColor = System.Drawing.Color.OrangeRed;
             this.label8.Location = new System.Drawing.Point(9, 9);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(98, 29);
@@ -402,8 +409,8 @@ namespace RCU_FG_Output_Counter
             this.label9.AutoSize = true;
             this.label9.BackColor = System.Drawing.Color.GhostWhite;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label9.Location = new System.Drawing.Point(8, 9);
+            this.label9.ForeColor = System.Drawing.Color.OrangeRed;
+            this.label9.Location = new System.Drawing.Point(14, 11);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(209, 29);
             this.label9.TabIndex = 27;
@@ -414,7 +421,7 @@ namespace RCU_FG_Output_Counter
             this.label10.AutoSize = true;
             this.label10.BackColor = System.Drawing.Color.GhostWhite;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label10.ForeColor = System.Drawing.Color.OrangeRed;
             this.label10.Location = new System.Drawing.Point(3, 9);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(248, 29);
@@ -424,6 +431,7 @@ namespace RCU_FG_Output_Counter
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.GhostWhite;
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.btnPauseWorkOrder);
             this.panel1.Controls.Add(this.lblWoStatus);
             this.panel1.Controls.Add(this.label5);
@@ -450,7 +458,7 @@ namespace RCU_FG_Output_Counter
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(645, 834);
+            this.panel1.Size = new System.Drawing.Size(645, 1251);
             this.panel1.TabIndex = 29;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -474,7 +482,7 @@ namespace RCU_FG_Output_Counter
             this.lblWoStatus.BackColor = System.Drawing.Color.GhostWhite;
             this.lblWoStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblWoStatus.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblWoStatus.Location = new System.Drawing.Point(455, 724);
+            this.lblWoStatus.Location = new System.Drawing.Point(459, 775);
             this.lblWoStatus.Name = "lblWoStatus";
             this.lblWoStatus.Size = new System.Drawing.Size(126, 29);
             this.lblWoStatus.TabIndex = 40;
@@ -486,7 +494,7 @@ namespace RCU_FG_Output_Counter
             this.label5.BackColor = System.Drawing.Color.GhostWhite;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label5.Location = new System.Drawing.Point(17, 720);
+            this.label5.Location = new System.Drawing.Point(21, 771);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(126, 29);
             this.label5.TabIndex = 39;
@@ -512,7 +520,7 @@ namespace RCU_FG_Output_Counter
             this.label3.BackColor = System.Drawing.Color.GhostWhite;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label3.Location = new System.Drawing.Point(503, 680);
+            this.label3.Location = new System.Drawing.Point(507, 731);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(78, 29);
             this.label3.TabIndex = 37;
@@ -524,7 +532,7 @@ namespace RCU_FG_Output_Counter
             this.label2.BackColor = System.Drawing.Color.GhostWhite;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label2.Location = new System.Drawing.Point(503, 644);
+            this.label2.Location = new System.Drawing.Point(507, 695);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(78, 29);
             this.label2.TabIndex = 36;
@@ -536,7 +544,7 @@ namespace RCU_FG_Output_Counter
             this.label1.BackColor = System.Drawing.Color.GhostWhite;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label1.Location = new System.Drawing.Point(503, 606);
+            this.label1.Location = new System.Drawing.Point(507, 657);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(78, 29);
             this.label1.TabIndex = 35;
@@ -548,7 +556,7 @@ namespace RCU_FG_Output_Counter
             this.lblnoofbox.BackColor = System.Drawing.Color.GhostWhite;
             this.lblnoofbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblnoofbox.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblnoofbox.Location = new System.Drawing.Point(17, 680);
+            this.lblnoofbox.Location = new System.Drawing.Point(21, 731);
             this.lblnoofbox.Name = "lblnoofbox";
             this.lblnoofbox.Size = new System.Drawing.Size(316, 29);
             this.lblnoofbox.TabIndex = 34;
@@ -560,7 +568,7 @@ namespace RCU_FG_Output_Counter
             this.lblwouttdy.BackColor = System.Drawing.Color.GhostWhite;
             this.lblwouttdy.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblwouttdy.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblwouttdy.Location = new System.Drawing.Point(15, 644);
+            this.lblwouttdy.Location = new System.Drawing.Point(19, 695);
             this.lblwouttdy.Name = "lblwouttdy";
             this.lblwouttdy.Size = new System.Drawing.Size(266, 29);
             this.lblwouttdy.TabIndex = 33;
@@ -572,7 +580,7 @@ namespace RCU_FG_Output_Counter
             this.lblwout.BackColor = System.Drawing.Color.GhostWhite;
             this.lblwout.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblwout.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblwout.Location = new System.Drawing.Point(15, 606);
+            this.lblwout.Location = new System.Drawing.Point(19, 657);
             this.lblwout.Name = "lblwout";
             this.lblwout.Size = new System.Drawing.Size(192, 29);
             this.lblwout.TabIndex = 32;
@@ -642,7 +650,7 @@ namespace RCU_FG_Output_Counter
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1796, 834);
+            this.panel2.Size = new System.Drawing.Size(1919, 1251);
             this.panel2.TabIndex = 30;
             // 
             // panel4
@@ -657,7 +665,7 @@ namespace RCU_FG_Output_Counter
             this.panel4.Location = new System.Drawing.Point(1269, 0);
             this.panel4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(527, 834);
+            this.panel4.Size = new System.Drawing.Size(650, 1251);
             this.panel4.TabIndex = 31;
             // 
             // label12
@@ -665,7 +673,7 @@ namespace RCU_FG_Output_Counter
             this.label12.AutoSize = true;
             this.label12.BackColor = System.Drawing.Color.GhostWhite;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label12.ForeColor = System.Drawing.Color.OrangeRed;
             this.label12.Location = new System.Drawing.Point(4, 368);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(248, 29);
@@ -675,7 +683,14 @@ namespace RCU_FG_Output_Counter
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.GhostWhite;
+            this.panel3.Controls.Add(this.txtSTDPK);
             this.panel3.Controls.Add(this.label4);
+            this.panel3.Controls.Add(this.txtPO);
+            this.panel3.Controls.Add(this.label44);
+            this.panel3.Controls.Add(this.txtCust);
+            this.panel3.Controls.Add(this.label43);
+            this.panel3.Controls.Add(this.label42);
+            this.panel3.Controls.Add(this.txtLot2);
             this.panel3.Controls.Add(this.txtLine);
             this.panel3.Controls.Add(this.lblid);
             this.panel3.Controls.Add(this.lblcpn2);
@@ -705,7 +720,6 @@ namespace RCU_FG_Output_Counter
             this.panel3.Controls.Add(this.btnClear);
             this.panel3.Controls.Add(this.txtQRBOM);
             this.panel3.Controls.Add(this.lblstdpk);
-            this.panel3.Controls.Add(this.txtSTDPK);
             this.panel3.Controls.Add(this.txtWOQ);
             this.panel3.Controls.Add(this.txtHEMPN);
             this.panel3.Controls.Add(this.txtLot);
@@ -714,7 +728,7 @@ namespace RCU_FG_Output_Counter
             this.panel3.Location = new System.Drawing.Point(645, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(624, 834);
+            this.panel3.Size = new System.Drawing.Size(624, 1251);
             this.panel3.TabIndex = 30;
             // 
             // label4
@@ -722,17 +736,80 @@ namespace RCU_FG_Output_Counter
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.GhostWhite;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label4.Location = new System.Drawing.Point(13, 438);
+            this.label4.ForeColor = System.Drawing.Color.OrangeRed;
+            this.label4.Location = new System.Drawing.Point(14, 529);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(139, 29);
             this.label4.TabIndex = 48;
             this.label4.Text = "Line Details";
             // 
+            // txtPO
+            // 
+            this.txtPO.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtPO.Location = new System.Drawing.Point(263, 475);
+            this.txtPO.Name = "txtPO";
+            this.txtPO.Size = new System.Drawing.Size(314, 32);
+            this.txtPO.TabIndex = 53;
+            this.txtPO.TabStop = false;
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.BackColor = System.Drawing.Color.GhostWhite;
+            this.label44.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label44.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label44.Location = new System.Drawing.Point(13, 475);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(78, 26);
+            this.label44.TabIndex = 54;
+            this.label44.Text = "PO No";
+            // 
+            // txtCust
+            // 
+            this.txtCust.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCust.Location = new System.Drawing.Point(263, 436);
+            this.txtCust.Name = "txtCust";
+            this.txtCust.Size = new System.Drawing.Size(314, 32);
+            this.txtCust.TabIndex = 51;
+            this.txtCust.TabStop = false;
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.BackColor = System.Drawing.Color.GhostWhite;
+            this.label43.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label43.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label43.Location = new System.Drawing.Point(13, 436);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(172, 26);
+            this.label43.TabIndex = 52;
+            this.label43.Text = "Customer Name";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.BackColor = System.Drawing.Color.GhostWhite;
+            this.label42.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label42.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label42.Location = new System.Drawing.Point(13, 362);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(71, 26);
+            this.label42.TabIndex = 50;
+            this.label42.Text = "LOT 2";
+            // 
+            // txtLot2
+            // 
+            this.txtLot2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtLot2.Location = new System.Drawing.Point(263, 360);
+            this.txtLot2.Name = "txtLot2";
+            this.txtLot2.Size = new System.Drawing.Size(314, 32);
+            this.txtLot2.TabIndex = 49;
+            this.txtLot2.TabStop = false;
+            // 
             // txtLine
             // 
             this.txtLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtLine.Location = new System.Drawing.Point(262, 493);
+            this.txtLine.Location = new System.Drawing.Point(263, 577);
             this.txtLine.Name = "txtLine";
             this.txtLine.Size = new System.Drawing.Size(314, 32);
             this.txtLine.TabIndex = 47;
@@ -742,11 +819,11 @@ namespace RCU_FG_Output_Counter
             // 
             this.lblid.AutoSize = true;
             this.lblid.BackColor = System.Drawing.Color.GhostWhite;
-            this.lblid.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblid.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblid.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblid.Location = new System.Drawing.Point(13, 493);
+            this.lblid.Location = new System.Drawing.Point(14, 580);
             this.lblid.Name = "lblid";
-            this.lblid.Size = new System.Drawing.Size(88, 29);
+            this.lblid.Size = new System.Drawing.Size(81, 26);
             this.lblid.TabIndex = 45;
             this.lblid.Text = "Line ID";
             // 
@@ -754,18 +831,18 @@ namespace RCU_FG_Output_Counter
             // 
             this.lblcpn2.AutoSize = true;
             this.lblcpn2.BackColor = System.Drawing.Color.GhostWhite;
-            this.lblcpn2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblcpn2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblcpn2.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblcpn2.Location = new System.Drawing.Point(13, 266);
+            this.lblcpn2.Location = new System.Drawing.Point(13, 247);
             this.lblcpn2.Name = "lblcpn2";
-            this.lblcpn2.Size = new System.Drawing.Size(120, 29);
+            this.lblcpn2.Size = new System.Drawing.Size(112, 26);
             this.lblcpn2.TabIndex = 44;
             this.lblcpn2.Text = "Cust PN 2";
             // 
             // txtcpn2
             // 
             this.txtcpn2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtcpn2.Location = new System.Drawing.Point(263, 264);
+            this.txtcpn2.Location = new System.Drawing.Point(263, 245);
             this.txtcpn2.Name = "txtcpn2";
             this.txtcpn2.Size = new System.Drawing.Size(314, 32);
             this.txtcpn2.TabIndex = 43;
@@ -775,18 +852,18 @@ namespace RCU_FG_Output_Counter
             // 
             this.lblcpn1.AutoSize = true;
             this.lblcpn1.BackColor = System.Drawing.Color.GhostWhite;
-            this.lblcpn1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblcpn1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblcpn1.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblcpn1.Location = new System.Drawing.Point(13, 226);
+            this.lblcpn1.Location = new System.Drawing.Point(13, 207);
             this.lblcpn1.Name = "lblcpn1";
-            this.lblcpn1.Size = new System.Drawing.Size(120, 29);
+            this.lblcpn1.Size = new System.Drawing.Size(112, 26);
             this.lblcpn1.TabIndex = 42;
             this.lblcpn1.Text = "Cust PN 1";
             // 
             // txtcpn1
             // 
             this.txtcpn1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtcpn1.Location = new System.Drawing.Point(263, 225);
+            this.txtcpn1.Location = new System.Drawing.Point(263, 206);
             this.txtcpn1.Name = "txtcpn1";
             this.txtcpn1.Size = new System.Drawing.Size(314, 32);
             this.txtcpn1.TabIndex = 41;
@@ -796,18 +873,18 @@ namespace RCU_FG_Output_Counter
             // 
             this.label18.AutoSize = true;
             this.label18.BackColor = System.Drawing.Color.GhostWhite;
-            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label18.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label18.Location = new System.Drawing.Point(13, 724);
+            this.label18.Location = new System.Drawing.Point(14, 808);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(109, 29);
+            this.label18.Size = new System.Drawing.Size(100, 26);
             this.label18.TabIndex = 39;
             this.label18.Text = "Remarks";
             // 
             // txtrmk
             // 
             this.txtrmk.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtrmk.Location = new System.Drawing.Point(262, 720);
+            this.txtrmk.Location = new System.Drawing.Point(263, 806);
             this.txtrmk.Name = "txtrmk";
             this.txtrmk.Size = new System.Drawing.Size(314, 32);
             this.txtrmk.TabIndex = 38;
@@ -817,18 +894,18 @@ namespace RCU_FG_Output_Counter
             // 
             this.label17.AutoSize = true;
             this.label17.BackColor = System.Drawing.Color.GhostWhite;
-            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label17.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label17.Location = new System.Drawing.Point(13, 685);
+            this.label17.Location = new System.Drawing.Point(14, 768);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(173, 29);
+            this.label17.Size = new System.Drawing.Size(153, 26);
             this.label17.TabIndex = 37;
             this.label17.Text = "No. of Op. TTL";
             // 
             // txtttl
             // 
             this.txtttl.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtttl.Location = new System.Drawing.Point(262, 681);
+            this.txtttl.Location = new System.Drawing.Point(263, 768);
             this.txtttl.Name = "txtttl";
             this.txtttl.Size = new System.Drawing.Size(314, 32);
             this.txtttl.TabIndex = 36;
@@ -838,18 +915,18 @@ namespace RCU_FG_Output_Counter
             // 
             this.label16.AutoSize = true;
             this.label16.BackColor = System.Drawing.Color.GhostWhite;
-            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label16.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label16.Location = new System.Drawing.Point(13, 646);
+            this.label16.Location = new System.Drawing.Point(14, 729);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(177, 29);
+            this.label16.Size = new System.Drawing.Size(163, 26);
             this.label16.TabIndex = 35;
             this.label16.Text = "No. of Op. SUB";
             // 
             // txtopsub
             // 
             this.txtopsub.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtopsub.Location = new System.Drawing.Point(262, 643);
+            this.txtopsub.Location = new System.Drawing.Point(263, 730);
             this.txtopsub.Name = "txtopsub";
             this.txtopsub.Size = new System.Drawing.Size(314, 32);
             this.txtopsub.TabIndex = 34;
@@ -859,18 +936,18 @@ namespace RCU_FG_Output_Counter
             // 
             this.label15.AutoSize = true;
             this.label15.BackColor = System.Drawing.Color.GhostWhite;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label15.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label15.Location = new System.Drawing.Point(13, 606);
+            this.label15.Location = new System.Drawing.Point(14, 691);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(181, 29);
+            this.label15.Size = new System.Drawing.Size(166, 26);
             this.label15.TabIndex = 33;
             this.label15.Text = "No. of Op. HEM";
             // 
             // txtophem
             // 
             this.txtophem.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtophem.Location = new System.Drawing.Point(262, 604);
+            this.txtophem.Location = new System.Drawing.Point(263, 691);
             this.txtophem.Name = "txtophem";
             this.txtophem.Size = new System.Drawing.Size(314, 32);
             this.txtophem.TabIndex = 32;
@@ -880,18 +957,18 @@ namespace RCU_FG_Output_Counter
             // 
             this.label14.AutoSize = true;
             this.label14.BackColor = System.Drawing.Color.GhostWhite;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label14.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label14.Location = new System.Drawing.Point(12, 566);
+            this.label14.Location = new System.Drawing.Point(13, 654);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(138, 29);
+            this.label14.Size = new System.Drawing.Size(124, 26);
             this.label14.TabIndex = 31;
             this.label14.Text = "Sub Leader";
             // 
             // txtsleader
             // 
             this.txtsleader.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtsleader.Location = new System.Drawing.Point(262, 565);
+            this.txtsleader.Location = new System.Drawing.Point(263, 652);
             this.txtsleader.Name = "txtsleader";
             this.txtsleader.Size = new System.Drawing.Size(314, 32);
             this.txtsleader.TabIndex = 30;
@@ -901,18 +978,18 @@ namespace RCU_FG_Output_Counter
             // 
             this.label13.AutoSize = true;
             this.label13.BackColor = System.Drawing.Color.GhostWhite;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label13.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label13.Location = new System.Drawing.Point(12, 529);
+            this.label13.Location = new System.Drawing.Point(13, 617);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(89, 29);
+            this.label13.Size = new System.Drawing.Size(79, 26);
             this.label13.TabIndex = 29;
             this.label13.Text = "Leader";
             // 
             // txtleader
             // 
             this.txtleader.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtleader.Location = new System.Drawing.Point(262, 528);
+            this.txtleader.Location = new System.Drawing.Point(263, 615);
             this.txtleader.Name = "txtleader";
             this.txtleader.Size = new System.Drawing.Size(314, 32);
             this.txtleader.TabIndex = 28;
@@ -1215,12 +1292,28 @@ namespace RCU_FG_Output_Counter
             this.label41.TabIndex = 57;
             this.label41.Text = ":";
             // 
+            // printDocument1
+            // 
+            this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.RoyalBlue;
+            this.button1.Font = new System.Drawing.Font("MS Reference Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Location = new System.Drawing.Point(432, 563);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(196, 55);
+            this.button1.TabIndex = 42;
+            this.button1.TabStop = false;
+            this.button1.Text = "Re-print label";
+            this.button1.UseVisualStyleBackColor = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
-            this.ClientSize = new System.Drawing.Size(1796, 1080);
+            this.ClientSize = new System.Drawing.Size(1919, 1289);
             this.Controls.Add(this.label41);
             this.Controls.Add(this.label40);
             this.Controls.Add(this.label39);
@@ -1349,6 +1442,14 @@ namespace RCU_FG_Output_Counter
         private System.Windows.Forms.Label label39;
         private System.Windows.Forms.Label label40;
         private System.Windows.Forms.Label label41;
+        private System.Drawing.Printing.PrintDocument printDocument1;
+        private System.Windows.Forms.TextBox txtPO;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.TextBox txtCust;
+        private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.TextBox txtLot2;
+        private System.Windows.Forms.Button button1;
     }
 }
 

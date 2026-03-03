@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
+using QRCoder;
 //////////
 
 namespace RCU_FG_Output_Counter
@@ -54,6 +55,10 @@ namespace RCU_FG_Output_Counter
         private string _currentCPN2;
         private string _currentLot;
         private int _currentStdPack;
+
+        private int currentSerial = 0;
+        private int endSerial = 0;
+        private QRCodeGenerator qrGenerator = new QRCodeGenerator();
 
         public MainForm()
         {
@@ -967,19 +972,23 @@ namespace RCU_FG_Output_Counter
             txtPrddte.ReadOnly = false;
             txtLot.ReadOnly = false;
             txtSTDPK.ReadOnly = false;
+            txtLot2.ReadOnly = false;
+            txtPO.ReadOnly = false;
+            txtCust.ReadOnly = false;
             cmbBatchID.Enabled = true;
 
             // Assign to textboxes
             txtWO.Text = parts[0].Trim();     // Work Order
             txtWOQ.Text = parts[1].Trim();    // Work Order Qty
             txtHEMPN.Text = parts[2].Trim();  // Part Number
-
             txtcpn1.Text = parts[3].Trim();   // cpn1
             txtcpn2.Text = parts[4].Trim();   // cpn2
-            
-            txtPrddte.Text = parts[5].Trim(); // Production Date
-            txtLot.Text = parts[6].Trim();    // Lot
-            txtSTDPK.Text = parts[7].Trim();  // Std Pack Qty
+            txtLot.Text = parts[5].Trim();    // Lot
+            txtLot2.Text = parts[6].Trim();    // Lot2
+            txtPrddte.Text = parts[7].Trim(); // Production Date
+            txtSTDPK.Text = parts[8].Trim();  // Std Pack Qty
+            txtCust.Text = parts[9].Trim(); // Customer name
+            txtPO.Text = parts[10].Trim(); // Customer PO
 
             //locked the textbox
             txtWO.ReadOnly = true;
@@ -990,6 +999,9 @@ namespace RCU_FG_Output_Counter
             txtPrddte.ReadOnly = true;
             txtLot.ReadOnly = true;
             txtSTDPK.ReadOnly = true;
+            txtLot2.ReadOnly = true;
+            txtCust.ReadOnly = true;
+            txtPO.ReadOnly = true;
 
         _currentFG = txtHEMPN.Text;
         _currentCPN = txtcpn1.Text;
@@ -1020,6 +1032,9 @@ namespace RCU_FG_Output_Counter
                 txtLot.Clear();
                 txtSTDPK.Clear();
                 txtQRBOM.Clear();
+                txtLot2.Clear();
+                txtCust.Clear();
+                txtPO.Clear();
 
                 txtLine.Clear();
                 txtleader.Clear();
@@ -1112,6 +1127,9 @@ namespace RCU_FG_Output_Counter
                         txtLot.Clear();
                         txtSTDPK.Clear();
                         txtQRBOM.Clear();
+                        txtLot2.Clear();
+                        txtCust.Clear();
+                        txtPO.Clear();
 
                         txtLine.Clear();
                         txtleader.Clear();
@@ -1211,6 +1229,9 @@ namespace RCU_FG_Output_Counter
             txtPrddte.ReadOnly = true;
             txtLot.ReadOnly = true;
             txtSTDPK.ReadOnly = true;
+            txtLot2.ReadOnly = true;
+            txtCust.ReadOnly = true;
+            txtPO.ReadOnly = true;
 
             // ===== Camera Initialization (after password accepted) =====
             videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
@@ -1283,13 +1304,14 @@ namespace RCU_FG_Output_Counter
                 string wo = txtWO.Text.Trim();
                 string hempn = txtHEMPN.Text.Trim();
                 string lot = txtLot.Text.Trim();
+                string lot2 = txtLot2.Text.Trim();
                 string batch = cmbBatchID.Text;
 
                 // Use timestamp for uniqueness
                 string timestamp = DateTime.Now.ToString("ddMMyy_HHmmss");
 
                 // Build base filename
-                string baseName = $"{wo}_{batch}_{hempn}_{lot}_{timestamp}";
+                string baseName = $"{wo}_{batch}_{hempn}_{lot}_{lot2}_{timestamp}";
 
                 // Replace invalid filename characters
                 foreach (char c in Path.GetInvalidFileNameChars())
@@ -1436,20 +1458,24 @@ namespace RCU_FG_Output_Counter
                         _lastCaptureCount = batchCount;
                         _batchActive = false;
 
-                        using (var qrForm = new QRLabelCheck(_currentFG, _currentCPN, _currentCPN2, _currentLot, _currentStdPack))
+                        this.Invoke(new Action(() =>
                         {
-                            if (qrForm.ShowDialog(this) == DialogResult.OK)
+                            try
                             {
-                                string qrData = qrForm.ScannedQR;
+                                currentSerial++;
+                                endSerial = currentSerial;
+                               
 
-                                _batchActive = true;
-                                StartCountdown();
+                                printDocument1.Print();
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                _batchActive = true;
+                                MessageBox.Show("Print Error: " + ex.Message);
                             }
-                        }
+                        }));
+
+                        _batchActive = true;
+                        StartCountdown();
                     }
                 }
             }
@@ -1464,11 +1490,6 @@ namespace RCU_FG_Output_Counter
             _lastCaptureCount = 0;
             _batchActive = true;
             lblCount.Text = "0";       // reset UI to zero for new batch
-        }
-
-        private void txtQRBOM_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void btnComplete_Click(object sender, EventArgs e)
@@ -1790,6 +1811,52 @@ namespace RCU_FG_Output_Counter
                 MessageBox.Show($"Error pausing work order: {ex.Message}", "Error",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            Graphics g = e.Graphics;
+
+            using (Font font = new Font("Arial", 14))
+            using (Font smallfont = new Font("Arial", 11))
+            {
+                string serialFormatted = currentSerial.ToString("D4");
+
+                // Build QR content (NO QC TYPE)
+                string qrContent =
+                    txtcpn1.Text + ";" +
+                    txtcpn2.Text + ";" +
+                    txtHEMPN.Text + ";" +
+                    txtLot.Text + ";" +
+                    txtLot2.Text + ";" +
+                    txtPO.Text + ";" +
+                    txtCust.Text + ";" +
+                    txtSTDPK.Text + ";" +
+                    txtLine + ":" + cmbBatchID.Text + ":" + serialFormatted + ";";
+
+                // Print label text
+                g.DrawString(txtcpn1.Text, smallfont, Brushes.Black, 20, 20);
+                g.DrawString(txtcpn2.Text, smallfont, Brushes.Black, 20, 30);
+                g.DrawString(txtHEMPN.Text, font, Brushes.Black, 20, 140);
+                g.DrawString(txtLot.Text, smallfont, Brushes.Black, 20, 200);
+                g.DrawString(txtLot2.Text, smallfont, Brushes.Black, 20, 220);
+                g.DrawString(txtPO.Text, font, Brushes.Black, 20, 280);
+                g.DrawString(txtCust.Text, font, Brushes.Black, 20, 340);
+                g.DrawString(txtSTDPK.Text, font, Brushes.Black, 250, 210);
+                g.DrawString(serialFormatted, font, Brushes.Black, 250, 280);
+
+                // Generate QR
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(qrCodeData);
+
+                using (Bitmap qrImage = qrCode.GetGraphic(2))
+                {
+                    g.DrawImage(qrImage, new Point(180, 190));
+                }
+            }
+
+            // Only print ONE page per trigger
+            e.HasMorePages = false;
         }
     }
 }

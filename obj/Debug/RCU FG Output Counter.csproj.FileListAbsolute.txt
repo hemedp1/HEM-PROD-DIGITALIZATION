@@ -51,3 +51,5 @@ C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter
 C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.csproj.CopyComplete
 C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.exe
 C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.pdb
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\bin\Debug\QRCoder.dll
+C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\bin\Debug\QRCoder.xml
