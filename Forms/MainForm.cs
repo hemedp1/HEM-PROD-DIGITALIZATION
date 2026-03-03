@@ -1400,7 +1400,7 @@ namespace RCU_FG_Output_Counter
         }
 
         // -------------------------------
-        // 2️⃣ Real-time counting from sensor
+        //  Real-time counting from sensor
         // -------------------------------
 
         private bool IsPNNoLabel(string hemPN)
@@ -1482,7 +1482,7 @@ namespace RCU_FG_Output_Counter
         }
 
         // -------------------------------
-        // 3️⃣ Start a new batch manually
+        //  Start a new batch manually
         // -------------------------------
         private void StartNewBatch()
         {
@@ -1832,7 +1832,7 @@ namespace RCU_FG_Output_Counter
                     txtPO.Text + ";" +
                     txtCust.Text + ";" +
                     txtSTDPK.Text + ";" +
-                    txtLine + ":" + cmbBatchID.Text + ":" + serialFormatted + ";";
+                    txtLine.Text + ":" + cmbBatchID.Text + ":" + serialFormatted + ";";
 
                 // Print label text
                 g.DrawString(txtcpn1.Text, smallfont, Brushes.Black, 20, 20);
@@ -1857,6 +1857,11 @@ namespace RCU_FG_Output_Counter
 
             // Only print ONE page per trigger
             e.HasMorePages = false;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

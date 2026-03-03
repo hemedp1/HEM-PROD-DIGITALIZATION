@@ -53,3 +53,22 @@ C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter
 C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.pdb
 C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\bin\Debug\QRCoder.dll
 C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\bin\Debug\QRCoder.xml
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\bin\Debug\RCU FG Output Counter.exe.config
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\bin\Debug\RCU FG Output Counter.exe
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\bin\Debug\RCU FG Output Counter.pdb
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\bin\Debug\Automation.BDaq4.dll
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\bin\Debug\QRCoder.dll
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\bin\Debug\System.Configuration.ConfigurationManager.dll
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\bin\Debug\QRCoder.xml
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\bin\Debug\System.Configuration.ConfigurationManager.xml
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU FG Output Counter.csproj.AssemblyReference.cache
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU_FG_Output_Counter.MainForm.resources
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU_FG_Output_Counter.PasswordPrompt.resources
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU_FG_Output_Counter.Properties.Resources.resources
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU_FG_Output_Counter.QRLabelCheck.resources
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU FG Output Counter.csproj.GenerateResource.cache
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU FG Output Counter.csproj.CoreCompileInputs.cache
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU FG O.88419ABC.Up2Date
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU FG Output Counter.exe
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU FG Output Counter.pdb
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU FG Output Counter.exe.config

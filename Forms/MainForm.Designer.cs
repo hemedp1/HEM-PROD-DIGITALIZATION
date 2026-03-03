@@ -51,6 +51,7 @@ namespace RCU_FG_Output_Counter
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.btnPauseWorkOrder = new System.Windows.Forms.Button();
             this.lblWoStatus = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -121,7 +122,6 @@ namespace RCU_FG_Output_Counter
             this.label40 = new System.Windows.Forms.Label();
             this.label41 = new System.Windows.Forms.Label();
             this.printDocument1 = new System.Drawing.Printing.PrintDocument();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picCamera1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picCamera2)).BeginInit();
             this.panel1.SuspendLayout();
@@ -461,6 +461,19 @@ namespace RCU_FG_Output_Counter
             this.panel1.Size = new System.Drawing.Size(645, 1251);
             this.panel1.TabIndex = 29;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.RoyalBlue;
+            this.button1.Font = new System.Drawing.Font("MS Reference Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Location = new System.Drawing.Point(432, 563);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(196, 55);
+            this.button1.TabIndex = 42;
+            this.button1.TabStop = false;
+            this.button1.Text = "Re-print label";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnPauseWorkOrder
             // 
@@ -1295,18 +1308,6 @@ namespace RCU_FG_Output_Counter
             // printDocument1
             // 
             this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.RoyalBlue;
-            this.button1.Font = new System.Drawing.Font("MS Reference Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(432, 563);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(196, 55);
-            this.button1.TabIndex = 42;
-            this.button1.TabStop = false;
-            this.button1.Text = "Re-print label";
-            this.button1.UseVisualStyleBackColor = false;
             // 
             // MainForm
             // 
