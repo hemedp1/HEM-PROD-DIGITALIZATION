@@ -60,6 +60,15 @@ namespace RCU_FG_Output_Counter
         private int endSerial = 0;
         private QRCodeGenerator qrGenerator = new QRCodeGenerator();
 
+        private bool isReprint = false;
+        private string reprintBatch = "";
+        private int reprintSerial = 0;
+
+
+        private string rfMark = "";
+        private string cMark = "";
+
+        private bool isQCCopy = false;
         public MainForm()
         {
             InitializeComponent();
@@ -69,6 +78,8 @@ namespace RCU_FG_Output_Counter
             _captureTimer.Tick += CaptureTimer_Tick;     // <-- this needs the method below
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 
+            printDocument1.PrinterSettings.PrinterName = "4BARCODE 4B-3044TC";
+            
         }
         private void InitAdvantechDaq()
         {
@@ -461,7 +472,7 @@ namespace RCU_FG_Output_Counter
         {
             if (_countdownActive) return;
 
-            _countdownValue = 6;
+            _countdownValue = 20;
             _countdownActive = true;
             lbltimer.Visible = true;
             lbltimer.Text = $"Capturing in {_countdownValue}...";
@@ -484,7 +495,7 @@ namespace RCU_FG_Output_Counter
             {
                 lbltimer.Text = $"Capturing in {_countdownValue}...";
 
-                int freq = 600 + (6 - _countdownValue) * 200; // 600 Hz at start, +200 Hz each step
+                int freq = 2000 + (20 - _countdownValue) * 200; // 600 Hz at start, +200 Hz each step
                 try
                 {
                     Console.Beep(freq, 200); // 200 ms tone
@@ -989,7 +1000,7 @@ namespace RCU_FG_Output_Counter
             txtSTDPK.Text = parts[8].Trim();  // Std Pack Qty
             txtCust.Text = parts[9].Trim(); // Customer name
             txtPO.Text = parts[10].Trim(); // Customer PO
-
+            
             //locked the textbox
             txtWO.ReadOnly = true;
             txtWOQ.ReadOnly = true;
@@ -1002,6 +1013,7 @@ namespace RCU_FG_Output_Counter
             txtLot2.ReadOnly = true;
             txtCust.ReadOnly = true;
             txtPO.ReadOnly = true;
+            
 
         _currentFG = txtHEMPN.Text;
         _currentCPN = txtcpn1.Text;
@@ -1812,17 +1824,137 @@ namespace RCU_FG_Output_Counter
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+ 
+        private void Checkcustmark()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+
+                    string query = @"
+                SELECT Customer_Special_Label_Mark
+                FROM ITEMMASTER
+                WHERE Product_ID = @hempn";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@hempn", txtHEMPN.Text);
+
+                        object result = cmd.ExecuteScalar();
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            cMark = result.ToString().Trim();  // store the value (LF or PL)
+                        }
+                        else
+                        {
+                            cMark = "";  // no cust mark
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error checking customer mark: {ex.Message}",
+                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void CheckRFItem()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+
+                    string query = @"
+                SELECT RoHS_Free_Mark
+                FROM ITEMMASTER
+                WHERE Product_ID = @hempn";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@hempn", txtHEMPN.Text);
+
+                        object result = cmd.ExecuteScalar();
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            rfMark = result.ToString().Trim();  // store the value (RF or RF2)
+                        }
+                        else
+                        {
+                            rfMark = "";  // no RF mark
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error checking RF item: {ex.Message}",
+                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
             Graphics g = e.Graphics;
 
-            using (Font font = new Font("Arial", 14))
-            using (Font smallfont = new Font("Arial", 11))
-            {
-                string serialFormatted = currentSerial.ToString("D4");
+            using (Font bigFont = new Font("Book Antiqua", 20, FontStyle.Bold))
+            using (Font smallFont = new Font("Book Antiqua", 16, FontStyle.Bold))
+            using (Font dtefont = new Font("Book Antiqua", 12, FontStyle.Bold))
+            using (Font dte2font = new Font("Book Antiqua", 8, FontStyle.Bold))
 
-                // Build QR content (NO QC TYPE)
+            {
+                //string serialFormatted = currentSerial.ToString("D2");
+                //string labelSerial;
+
+                //if (isQCCopy)
+                //{
+                //labelSerial = txtLine.Text + ":" + cmbBatchID.Text + ":" + "BOM";
+                //}
+                //else
+                //{
+                //labelSerial = txtLine.Text + ":" + cmbBatchID.Text + ":" + serialFormatted;
+                //}
+                string batchUsed;
+                string serialFormatted;
+                string labelSerial;
+
+                // Decide which batch and serial to use
+                if (isReprint)
+                {
+                    batchUsed = reprintBatch;
+                    serialFormatted = reprintSerial.ToString("D2");
+                }
+                else
+                {
+                    batchUsed = cmbBatchID.Text;
+                    serialFormatted = currentSerial.ToString("D2");
+                }
+
+                // Decide what appears on the label
+                if (isQCCopy)
+                {
+                    labelSerial = txtLine.Text + ":" + batchUsed + ":" + "BOM";
+                }
+                else
+                {
+                    labelSerial = txtLine.Text + ":" + batchUsed + ":" + serialFormatted;
+                }
+
+                bool hasSecondCPN = !string.IsNullOrWhiteSpace(txtcpn2.Text);
+                bool hasSecondLot = !string.IsNullOrWhiteSpace(txtLot2.Text);
+                string dayOnly = txtPrddte.Text.Substring(0, 2);
+                string monthOnly = txtPrddte.Text.Substring(3, 2);
+                string yearOnly = txtPrddte.Text.Substring(8, 2);
+                string printedDate = DateTime.Now.ToString("dd/MM/yyyy");
+
+                CheckRFItem();
+                Checkcustmark();
+                // Build QR content 
                 string qrContent =
                     txtcpn1.Text + ";" +
                     txtcpn2.Text + ";" +
@@ -1832,36 +1964,164 @@ namespace RCU_FG_Output_Counter
                     txtPO.Text + ";" +
                     txtCust.Text + ";" +
                     txtSTDPK.Text + ";" +
-                    txtLine.Text + ":" + cmbBatchID.Text + ":" + serialFormatted + ";";
+                    txtLine.Text + ":" + batchUsed + ":" + serialFormatted + ";";
 
                 // Print label text
-                g.DrawString(txtcpn1.Text, smallfont, Brushes.Black, 20, 20);
-                g.DrawString(txtcpn2.Text, smallfont, Brushes.Black, 20, 30);
-                g.DrawString(txtHEMPN.Text, font, Brushes.Black, 20, 140);
-                g.DrawString(txtLot.Text, smallfont, Brushes.Black, 20, 200);
-                g.DrawString(txtLot2.Text, smallfont, Brushes.Black, 20, 220);
-                g.DrawString(txtPO.Text, font, Brushes.Black, 20, 280);
-                g.DrawString(txtCust.Text, font, Brushes.Black, 20, 340);
-                g.DrawString(txtSTDPK.Text, font, Brushes.Black, 250, 210);
-                g.DrawString(serialFormatted, font, Brushes.Black, 250, 280);
+                // -------- Customer Part Number --------
+                if (hasSecondCPN)
+                {
+                    // Two CPN → smaller font
+                    g.DrawString(txtcpn1.Text, smallFont, Brushes.Black, 40, 48);
+                    g.DrawString(txtcpn2.Text, smallFont, Brushes.Black, 40, 68);
+                }
+                else
+                {
+                    // Only one CPN → bigger font
+                    g.DrawString(txtcpn1.Text, bigFont, Brushes.Black, 40, 48);
+                }
+
+                // -------- HEM PN --------
+                g.DrawString(txtHEMPN.Text, bigFont, Brushes.Black, 40, 115);
+
+                // -------- LOT --------
+                if (hasSecondLot)
+                {
+                    g.DrawString(txtLot.Text, smallFont, Brushes.Black, 40, 170);
+                    g.DrawString(txtLot2.Text, smallFont, Brushes.Black, 40, 190);
+                }
+                else
+                {
+                    g.DrawString(txtLot.Text, bigFont, Brushes.Black, 40, 170);
+                }
+
+                // -------- Remaining Fields --------
+                g.DrawString(txtPO.Text, bigFont, Brushes.Black, 40, 235);
+                g.DrawString(txtCust.Text, bigFont, Brushes.Black, 40, 300);
+                g.DrawString(txtSTDPK.Text, bigFont, Brushes.Black, 310, 170);
+                //g.DrawString(txtLine.Text + ":" + cmbBatchID.Text + ":" + serialFormatted,
+                //smallFont, Brushes.Black, 310, 235);
+                g.DrawString(labelSerial, smallFont, Brushes.Black, 310, 235);
+                g.DrawString(dayOnly, dtefont, Brushes.Black, 383, 10);
+                g.DrawString(monthOnly, dtefont, Brushes.Black, 335, 10);
+                g.DrawString(yearOnly, dtefont, Brushes.Black, 285, 10);
+                g.DrawString(printedDate, dte2font, Brushes.Black, 362, 341);
 
                 // Generate QR
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
                 QRCode qrCode = new QRCode(qrCodeData);
 
-                using (Bitmap qrImage = qrCode.GetGraphic(2))
+                using (Bitmap qrImage = qrCode.GetGraphic(6))
                 {
-                    g.DrawImage(qrImage, new Point(180, 190));
+                    int qrX = 220;      // X position
+                    int qrY = 153;      // Y position
+                    int qrWidth = 63;  // desired width in pixels
+                    int qrHeight = 63; // desired height in pixels
+
+                    g.DrawImage(qrImage, qrX, qrY, qrWidth, qrHeight);
+                }
+
+
+                //Generate RF logo
+                if (!string.IsNullOrEmpty(rfMark))
+                {                  
+                    using (Font rfFont = new Font("Book Antiqua", 20, FontStyle.Bold))
+                    using (Pen rfPen = new Pen(Color.Black, 2))
+                    {
+                        float rfX = 350;
+                        float rfY = 45;
+
+                        SizeF textSize = e.Graphics.MeasureString(rfMark, rfFont);
+                        float padding = 6;
+
+                        e.Graphics.DrawRectangle(
+                            rfPen,
+                            rfX - padding,
+                            rfY - padding,
+                            textSize.Width + padding * 2,
+                            textSize.Height + padding * 2);
+
+                        e.Graphics.DrawString(rfMark, rfFont, Brushes.Black, rfX, rfY);
+                    }
+                }
+
+                //Generate customer special logo
+                if (!string.IsNullOrEmpty(cMark))
+                {
+                    using (Font cFont = new Font("Book Antiqua", 20, FontStyle.Bold))
+                    using (Pen cPen = new Pen(Color.Black, 2))
+                    {
+                        float cX = 350;
+                        float cY = 105;
+
+                        SizeF textSize = e.Graphics.MeasureString(cMark, cFont);
+                        float padding = 6;
+
+                        e.Graphics.DrawRectangle(
+                            cPen,
+                            cX - padding,
+                            cY - padding,
+                            textSize.Width + padding * 2,
+                            textSize.Height + padding * 2);
+
+                        e.Graphics.DrawString(cMark, cFont, Brushes.Black, cX, cY);
+                    }
                 }
             }
 
             // Only print ONE page per trigger
             e.HasMorePages = false;
+            isQCCopy = false;
+            isReprint = false;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnReprint_Click(object sender, EventArgs e)
         {
+            // Ensure BOM already scanned, this is for BOM label copy DO NOT CONFUSE
+            if (string.IsNullOrWhiteSpace(txtHEMPN.Text))
+            {
+                MessageBox.Show("Please scan BOM before printing QC label.",
+                    "No BOM",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
 
+            isQCCopy = true;
+
+            printDocument1.Print();
+        }
+
+        private void btnRep_Click(object sender, EventArgs e)
+        {
+            //  Password prompt 
+            using (var prompt = new PasswordPrompt())
+            {
+                if (prompt.ShowDialog(this) == DialogResult.OK)
+                {
+                    if (prompt.EnteredPassword != "rcu123")
+                    {
+                        System.Media.SystemSounds.Hand.Play();
+                        MessageBox.Show("Incorrect password!", "Access Denied",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+            using (var inputForm = new Reprint())
+            {
+                if (inputForm.ShowDialog() == DialogResult.OK)
+                {
+                    isReprint = true;
+                    reprintBatch = inputForm.BatchNumber;
+                    reprintSerial = inputForm.SerialNumber;
+
+                    printDocument1.Print();
+                }
+            }
         }
     }
 }
