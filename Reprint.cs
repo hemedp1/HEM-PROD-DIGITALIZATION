@@ -42,4 +42,6 @@ namespace RCU_FG_Output_Counter
             this.Close();
         }
     }
+
+
 }

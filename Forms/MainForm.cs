@@ -851,7 +851,7 @@ namespace RCU_FG_Output_Counter
                         updateCmd.Parameters.AddWithValue("@Remarks", txtrmk.Text);
 
                         updateCmd.ExecuteNonQuery();
-
+                        ExportToFile(); // Create the Sage file
                         MessageBox.Show("Existing batch updated successfully.", "Data Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
@@ -890,7 +890,7 @@ namespace RCU_FG_Output_Counter
                         insertCmd.Parameters.AddWithValue("@Remarks", txtrmk.Text);
 
                         insertCmd.ExecuteNonQuery();
-
+                        ExportToFile(); // Create the Sage file
                         MessageBox.Show("New batch inserted successfully.", "Data Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -2121,6 +2121,38 @@ namespace RCU_FG_Output_Counter
 
                     printDocument1.Print();
                 }
+            }
+        }
+        private void ExportToFile()
+        {
+            try
+            {
+                // Path to your dual-homed NAS folder
+                string folderPath = @"\\192.168.0.5\exchange\";
+
+                if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+
+                // Filename format: WO_Batch_Timestamp
+                string fileName = "RCU_B1_Output";
+                string fullPath = Path.Combine(folderPath, fileName);
+
+                // Formatting the date to DDMMYY as seen in your example (080526)
+                string formattedDate = DateTime.Parse(txtPrddte.Text).ToString("ddMMyy");
+
+                // Building the lines based on your example
+                // .M.;.SITE.;.WO.;.PART.;QTY;.UOM.;.DATE.;..;..
+                string line1 = $".M.;.HEM01.;.{txtWO.Text}.;.{txtHEMPN.Text}.;{lblCount.Text};.EA.;.{txtLot}.;..;..";
+
+                // .S.;.WH.;.DATE.;..;..;..;
+                string line2 = $".S.;.WH2FIN.;.{txtLot}.;..;..;..;";
+
+                // Write both lines to the file
+                File.WriteAllLines(fullPath, new string[] { line1, line2 });
+            }
+            catch (Exception ex)
+            {
+                // Silent catch or log to a local file so production isn't interrupted
+                File.AppendAllText("error_log.txt", $"{DateTime.Now}: {ex.Message}{Environment.NewLine}");
             }
         }
     }
