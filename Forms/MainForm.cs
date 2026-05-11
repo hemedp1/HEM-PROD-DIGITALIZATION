@@ -78,7 +78,7 @@ namespace RCU_FG_Output_Counter
             _captureTimer.Tick += CaptureTimer_Tick;     // <-- this needs the method below
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 
-            printDocument1.PrinterSettings.PrinterName = "4BARCODE 4B-3044TC";
+            printDocument1.PrinterSettings.PrinterName = "SATO CG408";
             
         }
         private void InitAdvantechDaq()
@@ -851,7 +851,7 @@ namespace RCU_FG_Output_Counter
                         updateCmd.Parameters.AddWithValue("@Remarks", txtrmk.Text);
 
                         updateCmd.ExecuteNonQuery();
-
+                        ExportToFile(); // Create the Sage file
                         MessageBox.Show("Existing batch updated successfully.", "Data Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
@@ -890,7 +890,7 @@ namespace RCU_FG_Output_Counter
                         insertCmd.Parameters.AddWithValue("@Remarks", txtrmk.Text);
 
                         insertCmd.ExecuteNonQuery();
-
+                        ExportToFile(); // Create the Sage file
                         MessageBox.Show("New batch inserted successfully.", "Data Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -1971,40 +1971,40 @@ namespace RCU_FG_Output_Counter
                 if (hasSecondCPN)
                 {
                     // Two CPN → smaller font
-                    g.DrawString(txtcpn1.Text, smallFont, Brushes.Black, 40, 48);
-                    g.DrawString(txtcpn2.Text, smallFont, Brushes.Black, 40, 68);
+                    g.DrawString(txtcpn1.Text, smallFont, Brushes.Black, 20, 36);
+                    g.DrawString(txtcpn2.Text, smallFont, Brushes.Black, 20, 58);
                 }
                 else
                 {
                     // Only one CPN → bigger font
-                    g.DrawString(txtcpn1.Text, bigFont, Brushes.Black, 40, 48);
+                    g.DrawString(txtcpn1.Text, bigFont, Brushes.Black, 20, 40);
                 }
 
                 // -------- HEM PN --------
-                g.DrawString(txtHEMPN.Text, bigFont, Brushes.Black, 40, 115);
+                g.DrawString(txtHEMPN.Text, bigFont, Brushes.Black, 20, 93);
 
                 // -------- LOT --------
                 if (hasSecondLot)
                 {
-                    g.DrawString(txtLot.Text, smallFont, Brushes.Black, 40, 170);
-                    g.DrawString(txtLot2.Text, smallFont, Brushes.Black, 40, 190);
+                    g.DrawString(txtLot.Text, smallFont, Brushes.Black, 20, 153);
+                    g.DrawString(txtLot2.Text, smallFont, Brushes.Black, 20, 173);
                 }
                 else
                 {
-                    g.DrawString(txtLot.Text, bigFont, Brushes.Black, 40, 170);
+                    g.DrawString(txtLot.Text, bigFont, Brushes.Black, 20, 153);
                 }
 
                 // -------- Remaining Fields --------
-                g.DrawString(txtPO.Text, bigFont, Brushes.Black, 40, 235);
-                g.DrawString(txtCust.Text, bigFont, Brushes.Black, 40, 300);
-                g.DrawString(txtSTDPK.Text, bigFont, Brushes.Black, 310, 170);
+                g.DrawString(txtPO.Text, bigFont, Brushes.Black, 20, 215);
+                g.DrawString(txtCust.Text, bigFont, Brushes.Black, 20, 275);
+                g.DrawString(txtSTDPK.Text, bigFont, Brushes.Black, 290, 153);
                 //g.DrawString(txtLine.Text + ":" + cmbBatchID.Text + ":" + serialFormatted,
                 //smallFont, Brushes.Black, 310, 235);
-                g.DrawString(labelSerial, smallFont, Brushes.Black, 310, 235);
-                g.DrawString(dayOnly, dtefont, Brushes.Black, 383, 10);
-                g.DrawString(monthOnly, dtefont, Brushes.Black, 335, 10);
-                g.DrawString(yearOnly, dtefont, Brushes.Black, 285, 10);
-                g.DrawString(printedDate, dte2font, Brushes.Black, 362, 341);
+                g.DrawString(labelSerial, smallFont, Brushes.Black, 290, 215);
+                g.DrawString(dayOnly, dtefont, Brushes.Black, 368, 2);
+                g.DrawString(monthOnly, dtefont, Brushes.Black, 323, 2);
+                g.DrawString(yearOnly, dtefont, Brushes.Black, 273, 2);
+                g.DrawString(printedDate, dte2font, Brushes.Black, 346, 324);
 
                 // Generate QR
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
@@ -2012,8 +2012,8 @@ namespace RCU_FG_Output_Counter
 
                 using (Bitmap qrImage = qrCode.GetGraphic(6))
                 {
-                    int qrX = 220;      // X position
-                    int qrY = 153;      // Y position
+                    int qrX = 213;      // X position
+                    int qrY = 139;      // Y position
                     int qrWidth = 63;  // desired width in pixels
                     int qrHeight = 63; // desired height in pixels
 
@@ -2027,8 +2027,8 @@ namespace RCU_FG_Output_Counter
                     using (Font rfFont = new Font("Book Antiqua", 20, FontStyle.Bold))
                     using (Pen rfPen = new Pen(Color.Black, 2))
                     {
-                        float rfX = 350;
-                        float rfY = 45;
+                        float rfX = 330;
+                        float rfY = 35;
 
                         SizeF textSize = e.Graphics.MeasureString(rfMark, rfFont);
                         float padding = 6;
@@ -2051,7 +2051,7 @@ namespace RCU_FG_Output_Counter
                     using (Pen cPen = new Pen(Color.Black, 2))
                     {
                         float cX = 350;
-                        float cY = 105;
+                        float cY = 89;
 
                         SizeF textSize = e.Graphics.MeasureString(cMark, cFont);
                         float padding = 6;
@@ -2121,6 +2121,38 @@ namespace RCU_FG_Output_Counter
 
                     printDocument1.Print();
                 }
+            }
+        }
+        private void ExportToFile()
+        {
+            try
+            {
+                // Path to your dual-homed NAS folder
+                string folderPath = @"\\192.168.0.5\exchange\";
+
+                if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+
+                // Filename format: WO_Batch_Timestamp
+                string fileName = "RCU_B1_Output";
+                string fullPath = Path.Combine(folderPath, fileName);
+
+                // Formatting the date to DDMMYY as seen in your example (080526)
+                string formattedDate = DateTime.Parse(txtPrddte.Text).ToString("ddMMyy");
+
+                // Building the lines based on your example
+                // .M.;.SITE.;.WO.;.PART.;QTY;.UOM.;.DATE.;..;..
+                string line1 = $".M.;.HEM01.;.{txtWO.Text}.;.{txtHEMPN.Text}.;{lblCount.Text};.EA.;.{txtLot}.;..;..";
+
+                // .S.;.WH.;.DATE.;..;..;..;
+                string line2 = $".S.;.WH2FIN.;.{txtLot}.;..;..;..;";
+
+                // Write both lines to the file
+                File.WriteAllLines(fullPath, new string[] { line1, line2 });
+            }
+            catch (Exception ex)
+            {
+                // Silent catch or log to a local file so production isn't interrupted
+                File.AppendAllText("error_log.txt", $"{DateTime.Now}: {ex.Message}{Environment.NewLine}");
             }
         }
     }
