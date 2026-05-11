@@ -45,12 +45,22 @@ namespace RCU_FG_Output_Counter
         private VideoCaptureDevice camera1;
         private VideoCaptureDevice camera2;
 
+        //Add on 110526
+
+        // Camera health monitoring
+        private DateTime _lastFrameTimeCam1 = DateTime.MinValue;
+        private DateTime _lastFrameTimeCam2 = DateTime.MinValue;
+
+        private System.Windows.Forms.Timer _cameraHealthTimer;
+        private readonly object _camLock = new object();
+
         // Capture countdown timer (UI timer)
         private System.Windows.Forms.Timer _captureTimer;
         private int _countdownValue = 0;
         private bool _countdownActive = false;
 
-        private string _currentFG;
+        //  ?
+        private string _currentFG; 
         private string _currentCPN;
         private string _currentCPN2;
         private string _currentLot;
@@ -80,6 +90,241 @@ namespace RCU_FG_Output_Counter
 
             printDocument1.PrinterSettings.PrinterName = "SATO CG408";
             
+        }
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            using (var prompt = new PasswordPrompt())
+            {
+                if (prompt.ShowDialog(this) == DialogResult.OK)
+                {
+                    if (prompt.EnteredPassword != "admin")
+                    {
+                        MessageBox.Show("Incorrect password. Application will close.",
+                                        "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        this.Close();
+                        return;
+                    }
+                }
+                else
+                {
+                    this.Close();
+                    return;
+                }
+            }
+
+            // Disable QR scanning until line selected
+            txtQRBOM.ReadOnly = true;
+
+            txtWO.ReadOnly = true;
+            txtWOQ.ReadOnly = true;
+            txtcpn1.ReadOnly = true;
+            txtcpn2.ReadOnly = true;
+            txtHEMPN.ReadOnly = true;
+            txtPrddte.ReadOnly = true;
+            txtLot.ReadOnly = true;
+            txtSTDPK.ReadOnly = true;
+
+            // =========================
+            // CAMERA INITIALIZATION
+            // =========================
+            videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+
+            if (videoDevices.Count < 2)
+            {
+                MessageBox.Show("Less than 2 cameras detected.",
+                                "Camera Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            StartCamera1();
+            StartCamera2();
+
+            // =========================
+            // CAMERA HEALTH TIMER (AUTO RECOVERY)
+            // =========================
+            _cameraHealthTimer = new System.Windows.Forms.Timer();
+            _cameraHealthTimer.Interval = 2000; // check every 2 seconds
+            _cameraHealthTimer.Tick += CameraHealthTimer_Tick;
+            _cameraHealthTimer.Start();
+        }
+        private void StartCamera1()
+        {
+            try
+            {
+                camera1 = new VideoCaptureDevice(videoDevices[0].MonikerString);
+                camera1.NewFrame += Camera1_NewFrame;
+                camera1.Start();
+                _lastFrameTimeCam1 = DateTime.Now;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Camera 1 start failed: " + ex.Message);
+            }
+        }
+
+        private void StartCamera2()
+        {
+            try
+            {
+                camera2 = new VideoCaptureDevice(videoDevices[1].MonikerString);
+                camera2.NewFrame += Camera2_NewFrame;
+                camera2.Start();
+                _lastFrameTimeCam2 = DateTime.Now;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Camera 2 start failed: " + ex.Message);
+            }
+        }
+        private void Camera1_NewFrame(object sender, NewFrameEventArgs e)
+        {
+            try
+            {
+                _lastFrameTimeCam1 = DateTime.Now;
+
+                Bitmap bmp = (Bitmap)e.Frame.Clone();
+
+                this.BeginInvoke((MethodInvoker)(() =>
+                {
+                    var old = picCamera1.Image;
+                    picCamera1.Image = bmp;
+                    old?.Dispose();
+                }));
+            }
+            catch { }
+        }
+
+        private void Camera2_NewFrame(object sender, NewFrameEventArgs e)
+        {
+            try
+            {
+                _lastFrameTimeCam2 = DateTime.Now;
+
+                Bitmap bmp = (Bitmap)e.Frame.Clone();
+
+                this.BeginInvoke((MethodInvoker)(() =>
+                {
+                    var old = picCamera2.Image;
+                    picCamera2.Image = bmp;
+                    old?.Dispose();
+                }));
+            }
+            catch { }
+        }
+        private void CameraHealthTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                if ((DateTime.Now - _lastFrameTimeCam1).TotalSeconds > 3)
+                {
+                    RestartCamera(1);
+                }
+
+                if ((DateTime.Now - _lastFrameTimeCam2).TotalSeconds > 3)
+                {
+                    RestartCamera(2);
+                }
+            }
+            catch { }
+        }
+        private void RestartCamera(int camIndex)
+        {
+            lock (_camLock)
+            {
+                try
+                {
+                    if (videoDevices == null || videoDevices.Count < camIndex)
+                        return;
+
+                    if (camIndex == 1)
+                    {
+                        if (camera1 != null)
+                        {
+                            if (camera1.IsRunning)
+                            {
+                                camera1.SignalToStop();
+                                camera1.WaitForStop();
+                            }
+                            camera1.NewFrame -= Camera1_NewFrame;
+                            camera1 = null;
+                        }
+
+                        StartCamera1();
+                    }
+                    else if (camIndex == 2)
+                    {
+                        if (camera2 != null)
+                        {
+                            if (camera2.IsRunning)
+                            {
+                                camera2.SignalToStop();
+                                camera2.WaitForStop();
+                            }
+                            camera2.NewFrame -= Camera2_NewFrame;
+                            camera2 = null;
+                        }
+
+                        StartCamera2();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Camera restart failed: " + ex.Message);
+                }
+            }
+        }
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 1️⃣ First check if the user is trying to close manually
+            if (e.CloseReason == CloseReason.UserClosing && _batchActive)
+            {
+                e.Cancel = true;
+                MessageBox.Show(
+                    "Unable to close — a batch is currently in progress!",
+                    "Batch Active",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return; // VERY IMPORTANT
+            }
+
+            // 2️⃣ Only run cleanup if closing is allowed
+            _daqPollTimer?.Dispose();
+            _diCtrl?.Dispose();
+
+            // Stop camera health timer
+            _cameraHealthTimer?.Stop();
+            _cameraHealthTimer?.Dispose();
+
+            if (camera1 != null)
+            {
+                if (camera1.IsRunning)
+                {
+                    camera1.SignalToStop();
+                    camera1.WaitForStop();
+                }
+            }
+
+            if (camera2 != null)
+            {
+                if (camera2.IsRunning)
+                {
+                    camera2.SignalToStop();
+                    camera2.WaitForStop();
+                }
+            }
+        }
+        private void cmbline_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbline.SelectedIndex != -1)
+            {
+                txtQRBOM.ReadOnly = false;
+                txtQRBOM.Focus(); // ready for QR scan
+            }
+            else
+            {
+                txtQRBOM.ReadOnly = true;
+            }
         }
         private void InitAdvantechDaq()
         {
@@ -179,12 +424,14 @@ namespace RCU_FG_Output_Counter
             FROM PRODUCTIONLINE
             WHERE Work_Order = @Work_Order
               AND HEM_PN = @hempn
+              AND Line_ID = @LINE_NO
               AND CONVERT(date, Tarikh) = @Tarikh;";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Work_Order", txtWO.Text);
                         cmd.Parameters.AddWithValue("@hempn", txtHEMPN.Text);
+                        cmd.Parameters.AddWithValue("@LINE_NO", cmbline.Text);
 
                         // FIX: Send DateTime, not string
                         cmd.Parameters.Add("@Tarikh", SqlDbType.Date).Value =
@@ -194,7 +441,7 @@ namespace RCU_FG_Output_Counter
                         {
                             if (dr.Read())
                             {
-                                txtLine.Text = dr["Line_ID"].ToString();
+                                //txtLine.Text = dr["Line_ID"].ToString();
                                 txtleader.Text = dr["Leader"].ToString();
                                 txtsleader.Text = dr["Sub_Leader"].ToString();
                                 txtophem.Text = dr["No_OperatorHEM"].ToString();
@@ -204,7 +451,7 @@ namespace RCU_FG_Output_Counter
                             else
                             {
                                 // Clear fields when no data found
-                                txtLine.Clear();
+                                // txtLine.Clear();
                                 txtleader.Clear();
                                 txtsleader.Clear();
                                 txtophem.Clear();
@@ -430,44 +677,7 @@ namespace RCU_FG_Output_Counter
             _diCtrl?.Dispose();
             _diCtrl = null;
         }
-        /*
-        private void OnSensorPulseDetected()
-        {
-            if (!_batchActive) return;
-
-            int current = Interlocked.Add(ref _count, 0); // atomic read
-            int batchCount = current - _batchBaseline;
-            if (batchCount < 0) batchCount = 0;
-
-            lblCount.Text = batchCount.ToString("N0");
-            lblLastScan.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-            if (int.TryParse(txtSTDPK.Text, out int stdPack) && stdPack > 0)
-            {
-                if (batchCount > 0 && batchCount % stdPack == 0)
-                {
-                    System.Media.SystemSounds.Asterisk.Play();
-                    if (batchCount != _lastCaptureCount) // avoid duplicate firing
-                    {
-                        _lastCaptureCount = batchCount;
-                        _batchActive = false;  // pause counting
-
-                        using (var qrForm = new QRLabelCheck(_currentFG, _currentCPN, _currentCPN2, _currentLot, _currentStdPack))
-                        {
-                            if (qrForm.ShowDialog(this) == DialogResult.OK)
-                            {
-                                string qrData = qrForm.ScannedQR;
-                                MessageBox.Show($"FG Label OK: {qrData}");
-
-                                _batchActive = true;   // resume
-                                StartCountdown();      // take picture
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        */
+       
         private void StartCountdown()
         {
             if (_countdownActive) return;
@@ -542,7 +752,7 @@ namespace RCU_FG_Output_Counter
             {
                 if (prompt.ShowDialog(this) == DialogResult.OK)
                 {
-                    if (prompt.EnteredPassword != "master") // check password
+                    if (prompt.EnteredPassword != "admin") // check password
                     {
                         System.Media.SystemSounds.Hand.Play();
                         MessageBox.Show("Incorrect password!", "Access Denied",
@@ -623,11 +833,13 @@ namespace RCU_FG_Output_Counter
                                             SET BATCH_QTY = @qtyAdjustment
                                             WHERE WO = @WO
                                               AND BATCH_NO = @BatchNo
-                                              AND PROD_DATE = @ProductionDate";
+                                              AND PROD_DATE = @ProductionDate
+                                              AND LINE_NO = @LINE_NO";
 
                                 using (SqlCommand cmd = new SqlCommand(updateQuery, con))
                                 {
                                     cmd.Parameters.AddWithValue("@WO", txtWO.Text);
+                                    cmd.Parameters.AddWithValue("@LINE_NO", cmbline.Text);
                                     cmd.Parameters.AddWithValue("@BatchNo", cmbBatchID.Text);
                                     DateTime prodDate = DateTime.ParseExact(txtPrddte.Text, "dd/MM/yyyy", null);
                                     cmd.Parameters.Add("@ProductionDate", SqlDbType.Date).Value = prodDate;
@@ -666,20 +878,19 @@ namespace RCU_FG_Output_Counter
         }
         private void btnStartBatch_Click(object sender, EventArgs e)
         {
-            
             // === Password prompt before starting test===
             using (var prompt = new PasswordPrompt())
             {
                 if (prompt.ShowDialog(this) == DialogResult.OK)
                 {
-                    if (prompt.EnteredPassword != "master") // check password
+                    if (prompt.EnteredPassword != "admin") // check password
                     {
                         System.Media.SystemSounds.Hand.Play();
                         MessageBox.Show("Incorrect password!", "Access Denied",
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return; // stop here
                     }
-                    
+
                 }
                 else
                 {
@@ -749,7 +960,7 @@ namespace RCU_FG_Output_Counter
             {
                 if (prompt.ShowDialog(this) == DialogResult.OK)
                 {
-                    if (prompt.EnteredPassword != "master") // check password
+                    if (prompt.EnteredPassword != "admin") // check password
                     {
                         System.Media.SystemSounds.Hand.Play();
                         MessageBox.Show("Incorrect password!", "Access Denied",
@@ -793,12 +1004,13 @@ namespace RCU_FG_Output_Counter
                 {
                     con.Open();
 
-                    string checkQuery = "SELECT COUNT(*) FROM PROD_OUTPUT WHERE WO = @WO AND BATCH_NO = @BATCH_NO AND PROD_DATE = @PROD_DATE"; // 050226
+                    string checkQuery = "SELECT COUNT(*) FROM PROD_OUTPUT WHERE WO = @WO AND BATCH_NO = @BATCH_NO AND PROD_DATE = @PROD_DATE AND LINE_NO = @LINE_NO"; // 050226
                     SqlCommand checkCmd = new SqlCommand(checkQuery, con);
                     checkCmd.Parameters.AddWithValue("@WO", txtWO.Text);
                     checkCmd.Parameters.AddWithValue("@BATCH_NO", cmbBatchID.Text);
                     DateTime prodDatee = DateTime.ParseExact(txtPrddte.Text, "dd/MM/yyyy", null);
                     checkCmd.Parameters.Add("@PROD_DATE", SqlDbType.Date).Value = prodDatee;
+                    checkCmd.Parameters.AddWithValue("@LINE_NO", cmbline.Text);
 
                     int count = (int)checkCmd.ExecuteScalar();
 
@@ -824,7 +1036,7 @@ namespace RCU_FG_Output_Counter
                                                     No_OperatorSUB = @No_OperatorSUB,
                                                     No_Operator = @No_Operator,
                                                     Remarks = @Remarks
-                                                WHERE WO = @WO AND BATCH_NO = @BATCH_NO AND PROD_DATE = @PROD_DATE";    // 050226
+                                                WHERE WO = @WO AND BATCH_NO = @BATCH_NO AND PROD_DATE = @PROD_DATE AND LINE_NO = @LINE_NO";    // 050226
 
                         SqlCommand updateCmd = new SqlCommand(updateQuery, con);
                         updateCmd.Parameters.AddWithValue("@WO", txtWO.Text);
@@ -838,7 +1050,7 @@ namespace RCU_FG_Output_Counter
                         updateCmd.Parameters.AddWithValue("@PROD_TIME", DateTime.Now.TimeOfDay);
                         updateCmd.Parameters.AddWithValue("@LOT", txtLot.Text);
                         updateCmd.Parameters.AddWithValue("@STDPK", Convert.ToInt32(txtSTDPK.Text));
-                        updateCmd.Parameters.AddWithValue("@LINE_NO", txtLine.Text);
+                        updateCmd.Parameters.AddWithValue("@LINE_NO", cmbline.Text);
                         updateCmd.Parameters.AddWithValue("@BATCH_NO", cmbBatchID.Text);
                         updateCmd.Parameters.AddWithValue("@BATCH_QTY", Convert.ToInt32(lblCount.Text));
 
@@ -858,12 +1070,12 @@ namespace RCU_FG_Output_Counter
                     {
                         // INSERT new record
                         string insertQuery = @"
-    INSERT INTO PROD_OUTPUT 
-    (WO, WO_Qty, HEM_PN, CUST_PN_1, CUST_PN_2, PROD_DATE, PROD_TIME, LOT, STDPK, LINE_NO, 
-     BATCH_NO, BATCH_QTY, Leader, Sub_Leader, No_OperatorHEM, No_OperatorSUB, No_Operator, Remarks)
-    VALUES 
-    (@WO, @WO_Qty, @HEM_PN, @CUST_PN_1, @CUST_PN_2, @PROD_DATE, @PROD_TIME, @LOT, @STDPK, @LINE_NO, 
-     @BATCH_NO, @BATCH_QTY, @Leader, @Sub_Leader, @No_OperatorHEM, @No_OperatorSUB, @No_Operator, @Remarks)";
+                        INSERT INTO PROD_OUTPUT 
+                        (WO, WO_Qty, HEM_PN, CUST_PN_1, CUST_PN_2, PROD_DATE, PROD_TIME, LOT, STDPK, LINE_NO, 
+                         BATCH_NO, BATCH_QTY, Leader, Sub_Leader, No_OperatorHEM, No_OperatorSUB, No_Operator, Remarks)
+                        VALUES 
+                        (@WO, @WO_Qty, @HEM_PN, @CUST_PN_1, @CUST_PN_2, @PROD_DATE, @PROD_TIME, @LOT, @STDPK, @LINE_NO, 
+                         @BATCH_NO, @BATCH_QTY, @Leader, @Sub_Leader, @No_OperatorHEM, @No_OperatorSUB, @No_Operator, @Remarks)";
 
                         SqlCommand insertCmd = new SqlCommand(insertQuery, con);
                         insertCmd.Parameters.AddWithValue("@WO", txtWO.Text);
@@ -877,7 +1089,7 @@ namespace RCU_FG_Output_Counter
                         insertCmd.Parameters.AddWithValue("@PROD_TIME", DateTime.Now.TimeOfDay);
                         insertCmd.Parameters.AddWithValue("@LOT", txtLot.Text);
                         insertCmd.Parameters.AddWithValue("@STDPK", Convert.ToInt32(txtSTDPK.Text));
-                        insertCmd.Parameters.AddWithValue("@LINE_NO", txtLine.Text);
+                        insertCmd.Parameters.AddWithValue("@LINE_NO", cmbline.Text);
                         insertCmd.Parameters.AddWithValue("@BATCH_NO", cmbBatchID.Text);
                         insertCmd.Parameters.AddWithValue("@BATCH_QTY", Convert.ToInt32(lblCount.Text));
 
@@ -919,46 +1131,7 @@ namespace RCU_FG_Output_Counter
             No_of_boxes();
         }
         
-        /*
-        private void UpdateOutputLabels()
-        {
-            string query = @"
-        SELECT 
-            ISNULL(SUM(CASE WHEN WO = @WO THEN STDPK ELSE 0 END), 0) AS Total_WO_Output,
-            ISNULL(SUM(CASE WHEN PROD_DATE = CAST(GETDATE() AS DATE) THEN STDPK ELSE 0 END), 0) AS Total_WO_Output_Today,
-            ISNULL(SUM(CASE WHEN WO = @WO AND BATCH_NO = @BatchNo THEN BATCH_QTY ELSE 0 END), 0) AS curr_batch_qty
-        FROM PROD_OUTPUT";
-
-            string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
-
-            try
-            {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@WO", txtWO.Text);
-                    cmd.Parameters.AddWithValue("@BatchNo", cmbBatchID.Text);
-                    con.Open();
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            label1.Text = Convert.ToInt32(reader["Total_WO_Output"]).ToString();
-                            label2.Text = Convert.ToInt32(reader["Total_WO_Output_Today"]).ToString();
-                            lblCount.Text = Convert.ToInt32(reader["curr_batch_qty"]).ToString();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error updating labels: {ex.Message}");
-                label1.Text = "0";
-                label2.Text = "0";
-            }
-        }
-
-        */
+       
         private void ProcessQR(string qrData)
         {
             if (string.IsNullOrWhiteSpace(qrData))
@@ -1048,7 +1221,7 @@ namespace RCU_FG_Output_Counter
                 txtCust.Clear();
                 txtPO.Clear();
 
-                txtLine.Clear();
+                //cmbline.Clear();
                 txtleader.Clear();
                 txtsleader.Clear();
                 txtophem.Clear();
@@ -1126,7 +1299,7 @@ namespace RCU_FG_Output_Counter
             {
                 if (prompt.ShowDialog(this) == DialogResult.OK)
                 {
-                    if (prompt.EnteredPassword == "master") // check password
+                    if (prompt.EnteredPassword == "admin") // check password
                     {
 
                         // Clear all textboxes
@@ -1143,7 +1316,7 @@ namespace RCU_FG_Output_Counter
                         txtCust.Clear();
                         txtPO.Clear();
 
-                        txtLine.Clear();
+                        //cmbline.Clear();
                         txtleader.Clear();
                         txtsleader.Clear();
                         txtophem.Clear();
@@ -1166,108 +1339,9 @@ namespace RCU_FG_Output_Counter
                 }
             }
          }
-        private void Camera1_NewFrame(object sender, NewFrameEventArgs e)
-        {
-            var bmp = (Bitmap)e.Frame.Clone();
-            var old = picCamera1.Image;
-            picCamera1.Image = bmp;
-            old?.Dispose();
-        }
-        private void Camera2_NewFrame(object sender, NewFrameEventArgs e)
-        {
-            var bmp = (Bitmap)e.Frame.Clone();
-            var old = picCamera2.Image;
-            picCamera2.Image = bmp;
-            old?.Dispose();
-        }
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // 1️⃣ First check if the user is trying to close manually
-            if (e.CloseReason == CloseReason.UserClosing && _batchActive)
-            {
-                e.Cancel = true;
-                MessageBox.Show(
-                    "Unable to close — a batch is currently in progress!",
-                    "Batch Active",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning
-                );
-                return; // VERY IMPORTANT
-            }
 
-            // 2️⃣ Only run cleanup if closing is allowed
-            _daqPollTimer?.Dispose();
-            _diCtrl?.Dispose();
-
-            if (camera1 != null)
-            {
-                if (camera1.IsRunning) { camera1.SignalToStop(); camera1.WaitForStop(); }
-                camera1 = null;
-            }
-
-            if (camera2 != null)
-            {
-                if (camera2.IsRunning) { camera2.SignalToStop(); camera2.WaitForStop(); }
-                camera2 = null;
-            }
-        }
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            using (var prompt = new PasswordPrompt())
-            {
-                if (prompt.ShowDialog(this) == DialogResult.OK)
-                {
-                    if (prompt.EnteredPassword != "master") // replace with your password
-                    {
-                        MessageBox.Show("Incorrect password. Application will close.",
-                                        "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        this.Close(); // close form if wrong password
-                        return; // stop further execution
-                    }
-                }
-                else
-                {
-                    // If user presses Cancel, exit
-                    this.Close();
-                    return;
-                }
-            }
-
-            txtWO.ReadOnly = true;
-            txtWOQ.ReadOnly = true;
-            txtcpn1.ReadOnly = true;
-            txtcpn2.ReadOnly = true;
-            txtHEMPN.ReadOnly = true;
-            txtPrddte.ReadOnly = true;
-            txtLot.ReadOnly = true;
-            txtSTDPK.ReadOnly = true;
-            txtLot2.ReadOnly = true;
-            txtCust.ReadOnly = true;
-            txtPO.ReadOnly = true;
-
-            // ===== Camera Initialization (after password accepted) =====
-            videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-
-            if (videoDevices.Count < 2)
-            {
-                MessageBox.Show("Less than 2 cameras detected.",
-                                "Camera Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Camera 1
-            camera1 = new VideoCaptureDevice(videoDevices[0].MonikerString);
-            camera1.NewFrame += Camera1_NewFrame;
-            camera1.Start();
-
-            // Camera 2
-            camera2 = new VideoCaptureDevice(videoDevices[1].MonikerString);
-            camera2.NewFrame += Camera2_NewFrame;
-            camera2.Start();
-
-            
-
-        }
+      
+        
         private void btnCapture_Click_1(object sender, EventArgs e)
         {
             try
@@ -1354,17 +1428,14 @@ namespace RCU_FG_Output_Counter
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }  
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
 
-        }
         private void UpdateOutputLabels()
         {
             string query = @"
                         SELECT 
                             ISNULL(SUM(CASE WHEN WO = @WO THEN BATCH_QTY ELSE 0 END), 0) AS Total_WO_Output,
                             ISNULL(SUM(CASE WHEN PROD_DATE = CAST(GETDATE() AS DATE) THEN BATCH_QTY ELSE 0 END), 0) AS Total_WO_Output_Today,
-                            ISNULL(SUM(CASE WHEN WO = @WO AND BATCH_NO = @BatchNo AND PROD_DATE = @ProductionDate THEN BATCH_QTY ELSE 0 END), 0) AS curr_batch_qty
+                            ISNULL(SUM(CASE WHEN WO = @WO AND BATCH_NO = @BatchNo AND PROD_DATE = @ProductionDate AND LINE_NO = @LINE_NO THEN BATCH_QTY ELSE 0 END), 0) AS curr_batch_qty
                         FROM PROD_OUTPUT";
 
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
@@ -1376,6 +1447,7 @@ namespace RCU_FG_Output_Counter
                 {
                     cmd.Parameters.AddWithValue("@WO", txtWO.Text);
                     cmd.Parameters.AddWithValue("@BatchNo", cmbBatchID.Text);
+                    cmd.Parameters.AddWithValue("@LINE_NO", cmbline.Text);
                     DateTime prodDate = DateTime.ParseExact(txtPrddte.Text, "dd/MM/yyyy", null);
 
                     cmd.Parameters.Add("@ProductionDate", SqlDbType.Date).Value = prodDate.Date;
@@ -1511,7 +1583,7 @@ namespace RCU_FG_Output_Counter
             {
                 if (prompt.ShowDialog(this) == DialogResult.OK)
                 {
-                    if (prompt.EnteredPassword != "master")
+                    if (prompt.EnteredPassword != "admin")
                     {
                         System.Media.SystemSounds.Hand.Play();
                         MessageBox.Show("Incorrect password!", "Access Denied",
@@ -1626,7 +1698,7 @@ namespace RCU_FG_Output_Counter
             {
                 if (prompt.ShowDialog(this) == DialogResult.OK)
                 {
-                    if (prompt.EnteredPassword != "master")
+                    if (prompt.EnteredPassword != "admin")
                     {
                         System.Media.SystemSounds.Hand.Play();
                         MessageBox.Show("Incorrect password!", "Access Denied",
@@ -1938,11 +2010,11 @@ namespace RCU_FG_Output_Counter
                 // Decide what appears on the label
                 if (isQCCopy)
                 {
-                    labelSerial = txtLine.Text + ":" + batchUsed + ":" + "BOM";
+                    labelSerial = cmbline.Text + ":" + batchUsed + ":" + "BOM";
                 }
                 else
                 {
-                    labelSerial = txtLine.Text + ":" + batchUsed + ":" + serialFormatted;
+                    labelSerial = cmbline.Text + ":" + batchUsed + ":" + serialFormatted;
                 }
 
                 bool hasSecondCPN = !string.IsNullOrWhiteSpace(txtcpn2.Text);
@@ -1964,7 +2036,7 @@ namespace RCU_FG_Output_Counter
                     txtPO.Text + ";" +
                     txtCust.Text + ";" +
                     txtSTDPK.Text + ";" +
-                    txtLine.Text + ":" + batchUsed + ":" + serialFormatted + ";";
+                    cmbline.Text + ":" + batchUsed + ":" + serialFormatted + ";";
 
                 // Print label text
                 // -------- Customer Part Number --------
@@ -2155,5 +2227,7 @@ namespace RCU_FG_Output_Counter
                 File.AppendAllText("error_log.txt", $"{DateTime.Now}: {ex.Message}{Environment.NewLine}");
             }
         }
+
+
     }
 }
