@@ -51,6 +51,12 @@ namespace RCU_FG_Output_Counter
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label48 = new System.Windows.Forms.Label();
+            this.label49 = new System.Windows.Forms.Label();
+            this.label50 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label46 = new System.Windows.Forms.Label();
+            this.label47 = new System.Windows.Forms.Label();
             this.btnRep = new System.Windows.Forms.Button();
             this.btnReprint = new System.Windows.Forms.Button();
             this.btnPauseWorkOrder = new System.Windows.Forms.Button();
@@ -123,12 +129,6 @@ namespace RCU_FG_Output_Counter
             this.label40 = new System.Windows.Forms.Label();
             this.label41 = new System.Windows.Forms.Label();
             this.printDocument1 = new System.Drawing.Printing.PrintDocument();
-            this.label45 = new System.Windows.Forms.Label();
-            this.label46 = new System.Windows.Forms.Label();
-            this.label47 = new System.Windows.Forms.Label();
-            this.label48 = new System.Windows.Forms.Label();
-            this.label49 = new System.Windows.Forms.Label();
-            this.label50 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picCamera1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picCamera2)).BeginInit();
             this.panel1.SuspendLayout();
@@ -475,6 +475,78 @@ namespace RCU_FG_Output_Counter
             this.panel1.Size = new System.Drawing.Size(645, 1251);
             this.panel1.TabIndex = 29;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.BackColor = System.Drawing.Color.GhostWhite;
+            this.label48.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label48.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label48.Location = new System.Drawing.Point(141, 1068);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(13, 20);
+            this.label48.TabIndex = 60;
+            this.label48.Text = ":";
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.BackColor = System.Drawing.Color.GhostWhite;
+            this.label49.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label49.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label49.Location = new System.Drawing.Point(160, 1069);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(261, 20);
+            this.label49.TabIndex = 59;
+            this.label49.Text = "To re-print label for NG replacement";
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.BackColor = System.Drawing.Color.GhostWhite;
+            this.label50.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label50.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label50.Location = new System.Drawing.Point(3, 1071);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(110, 20);
+            this.label50.TabIndex = 58;
+            this.label50.Text = "Re-Print Label";
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.BackColor = System.Drawing.Color.GhostWhite;
+            this.label45.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label45.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label45.Location = new System.Drawing.Point(141, 1046);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(13, 20);
+            this.label45.TabIndex = 57;
+            this.label45.Text = ":";
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.BackColor = System.Drawing.Color.GhostWhite;
+            this.label46.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label46.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label46.Location = new System.Drawing.Point(160, 1047);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(183, 20);
+            this.label46.TabIndex = 56;
+            this.label46.Text = "To Print Label BOM copy";
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.BackColor = System.Drawing.Color.GhostWhite;
+            this.label47.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label47.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label47.Location = new System.Drawing.Point(3, 1049);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(128, 20);
+            this.label47.TabIndex = 55;
+            this.label47.Text = "Label BOM Copy";
             // 
             // btnRep
             // 
@@ -1163,7 +1235,7 @@ namespace RCU_FG_Output_Counter
             this.label27.ForeColor = System.Drawing.SystemColors.HotTrack;
             this.label27.Location = new System.Drawing.Point(160, 979);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(380, 30);
+            this.label27.Size = new System.Drawing.Size(253, 20);
             this.label27.TabIndex = 43;
             this.label27.Text = "Pause running WO for WO change";
             // 
@@ -1335,78 +1407,6 @@ namespace RCU_FG_Output_Counter
             // printDocument1
             // 
             this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
-            // 
-            // label45
-            // 
-            this.label45.AutoSize = true;
-            this.label45.BackColor = System.Drawing.Color.GhostWhite;
-            this.label45.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label45.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label45.Location = new System.Drawing.Point(141, 1046);
-            this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(13, 20);
-            this.label45.TabIndex = 57;
-            this.label45.Text = ":";
-            // 
-            // label46
-            // 
-            this.label46.AutoSize = true;
-            this.label46.BackColor = System.Drawing.Color.GhostWhite;
-            this.label46.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label46.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label46.Location = new System.Drawing.Point(160, 1047);
-            this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(183, 20);
-            this.label46.TabIndex = 56;
-            this.label46.Text = "To Print Label BOM copy";
-            // 
-            // label47
-            // 
-            this.label47.AutoSize = true;
-            this.label47.BackColor = System.Drawing.Color.GhostWhite;
-            this.label47.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label47.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label47.Location = new System.Drawing.Point(3, 1049);
-            this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(192, 30);
-            this.label47.TabIndex = 55;
-            this.label47.Text = "Label BOM Copy";
-            // 
-            // label48
-            // 
-            this.label48.AutoSize = true;
-            this.label48.BackColor = System.Drawing.Color.GhostWhite;
-            this.label48.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label48.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label48.Location = new System.Drawing.Point(141, 1068);
-            this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(13, 20);
-            this.label48.TabIndex = 60;
-            this.label48.Text = ":";
-            // 
-            // label49
-            // 
-            this.label49.AutoSize = true;
-            this.label49.BackColor = System.Drawing.Color.GhostWhite;
-            this.label49.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label49.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label49.Location = new System.Drawing.Point(160, 1069);
-            this.label49.Name = "label49";
-            this.label49.Size = new System.Drawing.Size(392, 30);
-            this.label49.TabIndex = 59;
-            this.label49.Text = "To re-print label for NG replacement";
-            // 
-            // label50
-            // 
-            this.label50.AutoSize = true;
-            this.label50.BackColor = System.Drawing.Color.GhostWhite;
-            this.label50.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label50.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label50.Location = new System.Drawing.Point(3, 1071);
-            this.label50.Name = "label50";
-            this.label50.Size = new System.Drawing.Size(110, 20);
-            this.label50.TabIndex = 58;
-            this.label50.Text = "Re-Print Label";
             // 
             // MainForm
             // 

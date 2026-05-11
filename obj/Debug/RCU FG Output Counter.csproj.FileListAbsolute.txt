@@ -72,3 +72,4 @@ C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU FG Output 
 C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU FG Output Counter.exe.config
 C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU FG Output Counter.csproj.AssemblyReference.cache
 C:\FG Output Counter RCU\HEM-PROD-DIGITALIZATION\obj\Debug\RCU_FG_Output_Counter.Reprint.resources
+C:\Users\016-064-050\Desktop\Project\HEM-Digitalization\obj\Debug\RCU_FG_Output_Counter.Reprint.resources
