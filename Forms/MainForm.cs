@@ -1,6 +1,7 @@
 ﻿using AForge.Video;
 using AForge.Video.DirectShow;
 using Automation.BDaq;
+using QRCoder;
 using SLRDbConnector;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,12 @@ using System.Globalization;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
-using QRCoder;
 //////////
 
 namespace RCU_FG_Output_Counter
@@ -1160,19 +1161,23 @@ namespace RCU_FG_Output_Counter
             txtPO.ReadOnly = false;
             txtCust.ReadOnly = false;
             cmbBatchID.Enabled = true;
-
+            //   0          
+//                                            CPN2                      LOT2
+//WO26004246,4000,HTR1057 - 011030,DM00V134B05,A,12 / 05 / 2026,620B,100,B,C,RF2,D,
+//  0         1             2           3      4        5         6   7  8 9  10 11
+//																    CUSTOMER NAME
             // Assign to textboxes
             txtWO.Text = parts[0].Trim();     // Work Order
             txtWOQ.Text = parts[1].Trim();    // Work Order Qty
             txtHEMPN.Text = parts[2].Trim();  // Part Number
             txtcpn1.Text = parts[3].Trim();   // cpn1
             txtcpn2.Text = parts[4].Trim();   // cpn2
-            txtLot.Text = parts[5].Trim();    // Lot
-            txtLot2.Text = parts[6].Trim();    // Lot2
-            txtPrddte.Text = parts[7].Trim(); // Production Date
-            txtSTDPK.Text = parts[8].Trim();  // Std Pack Qty
+            txtPrddte.Text = parts[5].Trim(); // Production Date
+            txtLot.Text = parts[6].Trim();    // Lot
+            txtSTDPK.Text = parts[7].Trim();  // Std Pack Qty
+            txtLot2.Text = parts[8].Trim();    // Lot2
             txtCust.Text = parts[9].Trim(); // Customer name
-            txtPO.Text = parts[10].Trim(); // Customer PO
+            txtPO.Text = parts[11].Trim(); // Customer PO
             
             //locked the textbox
             txtWO.ReadOnly = true;
@@ -1511,7 +1516,6 @@ namespace RCU_FG_Output_Counter
                 }
             }
         }
-
         private void OnSensorPulseDetected()
         {
             if (!_batchActive) return;
@@ -1537,6 +1541,180 @@ namespace RCU_FG_Output_Counter
 
                     System.Media.SystemSounds.Asterisk.Play();
 
+                    if (batchCount != _lastCaptureCount)
+                    {
+                        _lastCaptureCount = batchCount;
+                        _batchActive = false;
+
+                        this.Invoke(new Action(() =>
+                        {
+                            try
+                            {
+                                currentSerial++;
+                                endSerial = currentSerial;
+
+                                try
+                                {
+                                    string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                                    using (SqlConnection con = new SqlConnection(connectionString))
+                                    {
+                                        con.Open();
+
+                                        string checkQuery = "SELECT COUNT(*) FROM PROD_OUTPUT WHERE WO = @WO AND BATCH_NO = @BATCH_NO AND PROD_DATE = @PROD_DATE AND LINE_NO = @LINE_NO"; // 050226
+                                        SqlCommand checkCmd = new SqlCommand(checkQuery, con);
+                                        checkCmd.Parameters.AddWithValue("@WO", txtWO.Text);
+                                        checkCmd.Parameters.AddWithValue("@BATCH_NO", cmbBatchID.Text);
+                                        DateTime prodDatee = DateTime.ParseExact(txtPrddte.Text, "dd/MM/yyyy", null);
+                                        checkCmd.Parameters.Add("@PROD_DATE", SqlDbType.Date).Value = prodDatee;
+                                        checkCmd.Parameters.AddWithValue("@LINE_NO", cmbline.Text);
+
+                                        int count = (int)checkCmd.ExecuteScalar();
+
+                                        if (count > 0)
+                                        {
+                                            // UPDATE existing record
+                                            string updateQuery = @"
+                                                UPDATE PROD_OUTPUT
+                                                SET 
+                                                    WO_Qty = @WO_Qty,
+                                                    HEM_PN = @HEM_PN,
+                                                    CUST_PN_1 = @CUST_PN_1,
+                                                    CUST_PN_2 = @CUST_PN_2,
+                                                    PROD_DATE = @PROD_DATE,
+                                                    PROD_TIME = @PROD_TIME,
+                                                    LOT = @LOT,
+                                                    STDPK = @STDPK,
+                                                    LINE_NO = @LINE_NO,
+                                                    BATCH_QTY = @BATCH_QTY,
+                                                    Leader = @Leader,
+                                                    Sub_Leader = @Sub_Leader,
+                                                    No_OperatorHEM = @No_OperatorHEM,
+                                                    No_OperatorSUB = @No_OperatorSUB,
+                                                    No_Operator = @No_Operator,
+                                                    Remarks = @Remarks
+                                                WHERE WO = @WO AND BATCH_NO = @BATCH_NO AND PROD_DATE = @PROD_DATE AND LINE_NO = @LINE_NO";    // 050226
+
+                                            SqlCommand updateCmd = new SqlCommand(updateQuery, con);
+                                            updateCmd.Parameters.AddWithValue("@WO", txtWO.Text);
+                                            updateCmd.Parameters.AddWithValue("@WO_Qty", Convert.ToInt32(txtWOQ.Text));
+                                            updateCmd.Parameters.AddWithValue("@HEM_PN", txtHEMPN.Text);
+                                            updateCmd.Parameters.AddWithValue("@CUST_PN_1", txtcpn1.Text);
+                                            updateCmd.Parameters.AddWithValue("@CUST_PN_2", txtcpn2.Text);
+
+                                            DateTime prodDate = DateTime.Parse(txtPrddte.Text);
+                                            updateCmd.Parameters.AddWithValue("@PROD_DATE", prodDate);
+                                            updateCmd.Parameters.AddWithValue("@PROD_TIME", DateTime.Now.TimeOfDay);
+                                            updateCmd.Parameters.AddWithValue("@LOT", txtLot.Text);
+                                            updateCmd.Parameters.AddWithValue("@STDPK", Convert.ToInt32(txtSTDPK.Text));
+                                            updateCmd.Parameters.AddWithValue("@LINE_NO", cmbline.Text);
+                                            updateCmd.Parameters.AddWithValue("@BATCH_NO", cmbBatchID.Text);
+                                            updateCmd.Parameters.AddWithValue("@BATCH_QTY", Convert.ToInt32(lblCount.Text));
+
+                                            // NEW FIELDS
+                                            updateCmd.Parameters.AddWithValue("@Leader", txtleader.Text);
+                                            updateCmd.Parameters.AddWithValue("@Sub_Leader", txtsleader.Text);
+                                            updateCmd.Parameters.AddWithValue("@No_OperatorHEM", Convert.ToInt32(txtophem.Text));
+                                            updateCmd.Parameters.AddWithValue("@No_OperatorSUB", Convert.ToInt32(txtopsub.Text));
+                                            updateCmd.Parameters.AddWithValue("@No_Operator", Convert.ToInt32(txtttl.Text));
+                                            updateCmd.Parameters.AddWithValue("@Remarks", txtrmk.Text);
+
+                                            updateCmd.ExecuteNonQuery();
+
+                                            //MessageBox.Show("Existing batch updated successfully.", "Data Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        }
+                                        else
+                                        {
+                                            // INSERT new record
+                                            string insertQuery = @"
+                                            INSERT INTO PROD_OUTPUT 
+                                            (WO, WO_Qty, HEM_PN, CUST_PN_1, CUST_PN_2, PROD_DATE, PROD_TIME, LOT, STDPK, LINE_NO, 
+                                             BATCH_NO, BATCH_QTY, Leader, Sub_Leader, No_OperatorHEM, No_OperatorSUB, No_Operator, Remarks)
+                                            VALUES 
+                                            (@WO, @WO_Qty, @HEM_PN, @CUST_PN_1, @CUST_PN_2, @PROD_DATE, @PROD_TIME, @LOT, @STDPK, @LINE_NO, 
+                                             @BATCH_NO, @BATCH_QTY, @Leader, @Sub_Leader, @No_OperatorHEM, @No_OperatorSUB, @No_Operator, @Remarks)";
+
+                                            SqlCommand insertCmd = new SqlCommand(insertQuery, con);
+                                            insertCmd.Parameters.AddWithValue("@WO", txtWO.Text);
+                                            insertCmd.Parameters.AddWithValue("@WO_Qty", Convert.ToInt32(txtWOQ.Text));
+                                            insertCmd.Parameters.AddWithValue("@HEM_PN", txtHEMPN.Text);
+                                            insertCmd.Parameters.AddWithValue("@CUST_PN_1", txtcpn1.Text);
+                                            insertCmd.Parameters.AddWithValue("@CUST_PN_2", txtcpn2.Text);
+
+                                            DateTime prodDate = DateTime.Parse(txtPrddte.Text);
+                                            insertCmd.Parameters.AddWithValue("@PROD_DATE", prodDate);
+                                            insertCmd.Parameters.AddWithValue("@PROD_TIME", DateTime.Now.TimeOfDay);
+                                            insertCmd.Parameters.AddWithValue("@LOT", txtLot.Text);
+                                            insertCmd.Parameters.AddWithValue("@STDPK", Convert.ToInt32(txtSTDPK.Text));
+                                            insertCmd.Parameters.AddWithValue("@LINE_NO", cmbline.Text);
+                                            insertCmd.Parameters.AddWithValue("@BATCH_NO", cmbBatchID.Text);
+                                            insertCmd.Parameters.AddWithValue("@BATCH_QTY", Convert.ToInt32(lblCount.Text));
+
+                                            // NEW FIELDS
+                                            insertCmd.Parameters.AddWithValue("@Leader", txtleader.Text);
+                                            insertCmd.Parameters.AddWithValue("@Sub_Leader", txtsleader.Text);
+                                            insertCmd.Parameters.AddWithValue("@No_OperatorHEM", Convert.ToInt32(txtophem.Text));
+                                            insertCmd.Parameters.AddWithValue("@No_OperatorSUB", Convert.ToInt32(txtopsub.Text));
+                                            insertCmd.Parameters.AddWithValue("@No_Operator", Convert.ToInt32(txtttl.Text));
+                                            insertCmd.Parameters.AddWithValue("@Remarks", txtrmk.Text);
+
+                                            insertCmd.ExecuteNonQuery();
+
+                                            //MessageBox.Show("New batch inserted successfully.", "Data Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show("An error occurred while saving the data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+
+
+                                Total_Output_WO();
+                                Total_Output_WO_Today();
+                                No_of_boxes();
+
+
+                                // +++++++++++++++++++++++++++++++++++  UPDATE
+
+                                printDocument1.Print();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Print Error: " + ex.Message);
+                            }
+                        }));
+
+                        _batchActive = true;
+                        StartCountdown();
+                    }
+                }
+            }
+        }
+        private void OnSensorPulseDetected123()
+        {
+            if (!_batchActive) return;
+
+            int current = Interlocked.Add(ref _count, 0);   // atomic read
+            int batchCount = current - _batchBaseline;
+            if (batchCount < 0) batchCount = 0;
+            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  "N0" format specifier
+            lblCount.Text = batchCount.ToString();
+            lblLastScan.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            if (int.TryParse(txtSTDPK.Text, out int stdPack) && stdPack > 0)
+            {
+                if (batchCount > 0 && batchCount % stdPack == 0)
+                {
+                    string currentPN = txtHEMPN.Text.Trim();
+
+                    // 🚫 Skip QR check if PN exists in PN_NO_LABEL
+                    if (IsPNNoLabel(currentPN))
+                    {
+                        return; // Do nothing, continue counting
+                    }
+
+                    System.Media.SystemSounds.Asterisk.Play();
+                    printDocument1.Print();
                     if (batchCount != _lastCaptureCount)
                     {
                         _lastCaptureCount = batchCount;
@@ -1625,12 +1803,12 @@ namespace RCU_FG_Output_Counter
                                         {
                                             // INSERT new record
                                             string insertQuery = @"
-                        INSERT INTO PROD_OUTPUT 
-                        (WO, WO_Qty, HEM_PN, CUST_PN_1, CUST_PN_2, PROD_DATE, PROD_TIME, LOT, STDPK, LINE_NO, 
-                         BATCH_NO, BATCH_QTY, Leader, Sub_Leader, No_OperatorHEM, No_OperatorSUB, No_Operator, Remarks)
-                        VALUES 
-                        (@WO, @WO_Qty, @HEM_PN, @CUST_PN_1, @CUST_PN_2, @PROD_DATE, @PROD_TIME, @LOT, @STDPK, @LINE_NO, 
-                         @BATCH_NO, @BATCH_QTY, @Leader, @Sub_Leader, @No_OperatorHEM, @No_OperatorSUB, @No_Operator, @Remarks)";
+                                            INSERT INTO PROD_OUTPUT 
+                                            (WO, WO_Qty, HEM_PN, CUST_PN_1, CUST_PN_2, PROD_DATE, PROD_TIME, LOT, STDPK, LINE_NO, 
+                                             BATCH_NO, BATCH_QTY, Leader, Sub_Leader, No_OperatorHEM, No_OperatorSUB, No_Operator, Remarks)
+                                            VALUES 
+                                            (@WO, @WO_Qty, @HEM_PN, @CUST_PN_1, @CUST_PN_2, @PROD_DATE, @PROD_TIME, @LOT, @STDPK, @LINE_NO, 
+                                             @BATCH_NO, @BATCH_QTY, @Leader, @Sub_Leader, @No_OperatorHEM, @No_OperatorSUB, @No_Operator, @Remarks)";
 
                                             SqlCommand insertCmd = new SqlCommand(insertQuery, con);
                                             insertCmd.Parameters.AddWithValue("@WO", txtWO.Text);
@@ -2202,6 +2380,7 @@ namespace RCU_FG_Output_Counter
                 g.DrawString(monthOnly, dtefont, Brushes.Black, 323, 2);
                 g.DrawString(yearOnly, dtefont, Brushes.Black, 273, 2);
                 g.DrawString(printedDate, dte2font, Brushes.Black, 346, 324);
+                //g.DrawString(printedDate, dte2font, Brushes.Black, 338, 270);
 
                 // Generate QR
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
@@ -2209,8 +2388,8 @@ namespace RCU_FG_Output_Counter
 
                 using (Bitmap qrImage = qrCode.GetGraphic(6))
                 {
-                    int qrX = 213;      // X position
-                    int qrY = 139;      // Y position
+                    int qrX = 209;      // X position
+                    int qrY = 140;      // Y position
                     int qrWidth = 63;  // desired width in pixels
                     int qrHeight = 63; // desired height in pixels
 
@@ -2224,7 +2403,7 @@ namespace RCU_FG_Output_Counter
                     using (Font rfFont = new Font("Book Antiqua", 20, FontStyle.Bold))
                     using (Pen rfPen = new Pen(Color.Black, 2))
                     {
-                        float rfX = 330;
+                        float rfX = 325;
                         float rfY = 35;
 
                         SizeF textSize = e.Graphics.MeasureString(rfMark, rfFont);
@@ -2247,8 +2426,8 @@ namespace RCU_FG_Output_Counter
                     using (Font cFont = new Font("Book Antiqua", 20, FontStyle.Bold))
                     using (Pen cPen = new Pen(Color.Black, 2))
                     {
-                        float cX = 350;
-                        float cY = 89;
+                        float cX = 325;  //left/right
+                        float cY = 92;  //height
 
                         SizeF textSize = e.Graphics.MeasureString(cMark, cFont);
                         float padding = 6;
@@ -2322,6 +2501,10 @@ namespace RCU_FG_Output_Counter
         }
         private void ExportToFile()
         {
+            string dayOnly = txtPrddte.Text.Substring(0, 2);
+            string monthOnly = txtPrddte.Text.Substring(3, 2);
+            string yearOnly = txtPrddte.Text.Substring(8, 2);
+            string dateCombine = dayOnly + monthOnly + yearOnly;
             try
             {
                 // Path to your dual-homed NAS folder
@@ -2338,10 +2521,10 @@ namespace RCU_FG_Output_Counter
 
                 // Building the lines based on your example
                 // .M.;.SITE.;.WO.;.PART.;QTY;.UOM.;.DATE.;..;..
-                string line1 = $".M.;.HEM01.;.{txtWO.Text}.;.{txtHEMPN.Text}.;{lblCount.Text};.EA.;.{txtLot}.;..;..";
+                string line1 = $".M.;.HEM01.;.{txtWO.Text}.;.{txtHEMPN.Text}.;{lblCount.Text};.EA.;.{dateCombine}.;..;..";
 
                 // .S.;.WH.;.DATE.;..;..;..;
-                string line2 = $".S.;.WH2FIN.;.{txtLot}.;..;..;..;";
+                string line2 = $".S.;.WH2FIN.;.{txtLot.Text}.;..;..;..;";
 
                 // Write both lines to the file
                 File.WriteAllLines(fullPath, new string[] { line1, line2 });
