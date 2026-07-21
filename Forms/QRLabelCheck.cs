@@ -165,5 +165,10 @@ namespace RCU_FG_Output_Counter
         {
             txtScan.Focus();
         }
+
+        private void txtScan_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
